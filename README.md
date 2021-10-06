@@ -5,8 +5,8 @@ snakemake and Python integrated workflow for intermediate file generation for CO
 ## installation
 
 ```
-git clone https://bitbucket.org/biocomputing-centre-pho/outbreaker/src/master/
-conda env create -f outbreaker/environments/environment.yml
+git clone https://github.com/matt-sd-watson/ncov_outbreaker.git
+conda env create -f ncov_outbreaker/environments/environment.yml
 conda activate ncov_outbreaker
 cd outbreaker
 pip install . 
