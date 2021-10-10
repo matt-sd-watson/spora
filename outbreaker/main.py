@@ -25,7 +25,13 @@ def main(sysargs = sys.argv[1:]):
     parser = argparse.ArgumentParser(add_help=False,
                                     description="Outbreaker: outbreak workflow for COVID-19",
                                     usage='''
-    \toutbreaker -c <config.yaml> ''')
+    \toutbreaker -c <config.yaml> 
+    \t OR
+    \t outbreaker -- focal_list ...''')
+
+    parser.add_argument('-h', "--help", action="help",
+                        help="Show the help output and exit.",
+                        dest="help")
 
     parser.add_argument('-c', "--config", action="store",
                          help="Input config file in yaml format, all command line arguments can be passed via the config file.",
@@ -71,10 +77,13 @@ def main(sysargs = sys.argv[1:]):
                         dest="names_csv", default="")
 
     if len(sysargs) < 1:
-        print("outbreaker requires at least one input argument.")
-        sys.exit(-1)
+        parser.print_help()
+        sys.exit(0)
     else:
         args = parser.parse_args(sysargs)
+        if args.help:
+            parser.print_help()
+            sys.exit(0)
 
     if args.config:
         # if args are passed in a config file, they overwrite any existing args or others passed by CLI
