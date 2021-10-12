@@ -81,9 +81,6 @@ def main(sysargs = sys.argv[1:]):
         sys.exit(0)
     else:
         args = parser.parse_args(sysargs)
-        if args.help:
-            parser.print_help()
-            sys.exit(0)
 
     if args.config:
         # if args are passed in a config file, they overwrite any existing args or others passed by CLI
