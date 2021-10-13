@@ -59,7 +59,7 @@ def main(sysargs = sys.argv[1:]):
 
     parser.add_argument('-p', "--prefix", action="store",
                         help="Prefix string to label all output files. Default: outbreak",
-                        dest="outbreak", default="")
+                        dest="prefix", default="outbreak")
 
     parser.add_argument('-n', "--nthreads", action="store",
                         help="Number of threads to use for processing. Default; 4",
