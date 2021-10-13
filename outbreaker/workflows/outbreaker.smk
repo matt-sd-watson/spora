@@ -1,12 +1,13 @@
 
 rule all:
     input:
-        os.path.join(config["outdir"], "outbreak.fa"),
-        os.path.join(config["outdir"], "outbreak_renamed.fa") if config["rename"] else [],
-        os.path.join(config["outdir"], "outbreak_aln.fasta"),
-        os.path.join(config["outdir"], "tree.nwk"),
-        os.path.join(config["outdir"], "snps_only.fasta") if config["snps_only"] else [],
-        os.path.join(config["outdir"], "snps_only.contree") if config["snps_only"] else []
+        os.path.join(config["outdir"], config["prefix"] + ".fa"),
+        os.path.join(config["outdir"], config["prefix"] + "_renamed.fa") if config["rename"] else [],
+        os.path.join(config["outdir"], config["prefix"] + "_aln.fasta"),
+        os.path.join(config["outdir"], config["prefix"]+ "_tree.nwk"),
+        os.path.join(config["outdir"], config["prefix"]+ "_snps_only.fasta") if config["snps_only"] else [],
+        os.path.join(config["outdir"], config["prefix"]+ "_snps_only.contree") if config["snps_only"] else [],
+        os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv")
         
         
 rule create_subset:
@@ -16,7 +17,7 @@ rule create_subset:
         background = config["background_list"] if config["background_list"] else []
     
     output: 
-        sub_fasta = os.path.join(config["outdir"], "outbreak.fa")
+        sub_fasta = os.path.join(config["outdir"], config["prefix"] + ".fa")
      
     run: 
         if config["background_list"]:
@@ -40,7 +41,7 @@ rule rename_headers:
         fasta = rules.create_subset.output.sub_fasta,
         names_csv = config["names_csv"] if config["names_csv"] else []
     output: 
-        renamed = os.path.join(config["outdir"], "outbreak_renamed.fa")
+        renamed = os.path.join(config["outdir"], config["prefix"] + "_renamed.fa")
     run: 
         if config["rename"]: 
             if config["names_csv"]: 
@@ -75,7 +76,7 @@ rule align:
         fasta = INPUT_ALIGN
     
     output: 
-        alignment = os.path.join(config["outdir"], "outbreak_aln.fasta")
+        alignment = os.path.join(config["outdir"], config["prefix"] + "_aln.fasta")
         
     shell: 
         """
@@ -91,7 +92,7 @@ rule tree:
         alignment = rules.align.output.alignment
     
     output: 
-        tree = os.path.join(config["outdir"], "tree.nwk")
+        tree = os.path.join(config["outdir"], config["prefix"]+ "_tree.nwk")
     
     shell: 
         """
@@ -104,7 +105,7 @@ rule snps_only:
     input: 
         alignment = rules.align.output.alignment
     output: 
-        snps_only = os.path.join(config["outdir"], "snps_only.fasta")
+        snps_only = os.path.join(config["outdir"], config["prefix"]+ "_snps_only.fasta")
     run: 
         if config["snps_only"]:
             shell("""
@@ -116,13 +117,24 @@ rule snps_only_tree:
     input: 
         snps_fasta = rules.snps_only.output.snps_only
     output: 
-        snps_only_tree = os.path.join(config["outdir"], "snps_only.contree")
+        snps_only_tree = os.path.join(config["outdir"], config["prefix"]+ "_snps_only.contree")
     run: 
         if config["snps_only"]: 
             shell(
             """
-            iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/snps_only -s {input.snps_fasta}
+            iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]} -s {input.snps_fasta}
             """)
+            
+rule snp_dists: 
+    input: 
+        fasta = rules.align.output.alignment
+    output: 
+        snp_dists = os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv")
+    shell:
+        """
+        snp-dists -m -c {input.fasta} > {output.snp_dists}
+        """
+        
         
 
 

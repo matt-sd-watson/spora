@@ -15,7 +15,8 @@ def get_defaults():
         KEY_THREADS: 4,
         KEY_SNPS_ONLY: False,
         KEY_RENAME: False,
-        KEY_NAMES_CSV: ""
+        KEY_NAMES_CSV: "",
+        KEY_PREFIX: "outbreak"
     }
     return default_dict
 
@@ -29,7 +30,8 @@ def valid_inputs(config):
     "nthreads": "nthreads",
     "snps_only": "snps_only",
     "rename": "rename",
-    "names_csv": "names_csv"}
+    "names_csv": "names_csv",
+    "prefix": "prefix"}
 
     for i in config:
         valid_arguments[i] = i

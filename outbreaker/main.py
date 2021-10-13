@@ -23,11 +23,11 @@ def get_primary_snakefile(thisdir):
 
 def main(sysargs = sys.argv[1:]):
     parser = argparse.ArgumentParser(add_help=False,
-                                    description="Outbreaker: outbreak workflow for COVID-19",
+                                    description="Outbreaker: Python and snakemake outbreak workflow for COVID-19",
                                     usage='''
     \toutbreaker -c <config.yaml> 
-    \t OR
-    \t outbreaker -- focal_list ...''')
+    \tOR
+    \toutbreaker --focal_list ...<input args>''')
 
     parser.add_argument('-h', "--help", action="help",
                         help="Show the help output and exit.",
@@ -56,6 +56,10 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument('-r', "--reference", action="store",
                         help=".gb file containing the desired COVID-19 reference sequence",
                         dest="reference", default="")
+
+    parser.add_argument('-p', "--prefix", action="store",
+                        help="Prefix string to label all output files. Default: outbreak",
+                        dest="outbreak", default="")
 
     parser.add_argument('-n', "--nthreads", action="store",
                         help="Number of threads to use for processing. Default; 4",
