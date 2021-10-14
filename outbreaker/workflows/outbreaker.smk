@@ -117,12 +117,12 @@ rule snps_only_tree:
     input: 
         snps_fasta = rules.snps_only.output.snps_only
     output: 
-        snps_only_tree = os.path.join(config["outdir"], config["prefix"]+ "_snps_only.contree")
+        snps_only_tree = os.path.join(config["outdir"], config["prefix"] + "_snps_only.contree")
     run: 
         if config["snps_only"]: 
             shell(
             """
-            iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]} -s {input.snps_fasta}
+            iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta}
             """)
             
 rule snp_dists: 
