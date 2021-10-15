@@ -115,16 +115,23 @@ rule snps_only:
 
 rule snps_only_tree: 
     input: 
-        snps_fasta = rules.snps_only.output.snps_only
+        snps_fasta = rules.snps_only.output.snps_only,
+        full_fasta = INPUT_ALIGN
     output: 
         snps_only_tree = os.path.join(config["outdir"], config["prefix"] + "_snps_only.contree")
     run: 
-        if config["snps_only"]: 
-            shell(
-            """
-            iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta}
-            """)
-            
+        if config["snps_only"]:
+            if config["const_sites"]:
+                shell("""
+                sites=$(snp-sites -C {input.full_fasta})
+                iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta} -fconst $sites -mfreq F -mrate G,R
+                """)
+            else:
+                shell(
+                """
+                iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta}
+                """)
+
 rule snp_dists: 
     input: 
         fasta = rules.align.output.alignment

@@ -16,7 +16,8 @@ def get_defaults():
         KEY_SNPS_ONLY: False,
         KEY_RENAME: False,
         KEY_NAMES_CSV: "",
-        KEY_PREFIX: "outbreak"
+        KEY_PREFIX: "outbreak",
+        KEY_CONST_SITES: True
     }
     return default_dict
 
@@ -31,7 +32,8 @@ def valid_inputs(config):
     "snps_only": "snps_only",
     "rename": "rename",
     "names_csv": "names_csv",
-    "prefix": "prefix"}
+    "prefix": "prefix",
+    "const_sites": "const_sites"}
 
     for i in config:
         valid_arguments[i] = i

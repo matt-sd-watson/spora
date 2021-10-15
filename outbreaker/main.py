@@ -37,19 +37,19 @@ def main(sysargs = sys.argv[1:]):
                          help="Input config file in yaml format, all command line arguments can be passed via the config file.",
                          dest="config")
 
-    parser.add_argument('-f', "--focal_list", action="store",
+    parser.add_argument('-f', "--focal-list", action="store",
                         help="Input .txt list of focal sample names for outbreak",
                         dest="focal_list", default="")
 
-    parser.add_argument('-b', "--background_list", action="store",
+    parser.add_argument('-b', "--background-list", action="store",
                         help="Optional input .txt list of background sample names to add to analysis",
                         dest="background_list", default="")
 
-    parser.add_argument('-m', "--master_fasta", action="store",
+    parser.add_argument('-m', "--master-fasta", action="store",
                         help="Master fasta of COVID sequences to select from",
                         dest="master_fasta", default="")
 
-    parser.add_argument('-o', "--output_directory", action="store",
+    parser.add_argument('-o', "--output-directory", action="store",
                         help="Path to the desired output directory",
                         dest="outdir", default="/home/")
 
@@ -69,16 +69,18 @@ def main(sysargs = sys.argv[1:]):
                         help="Generate a snps-only FASTA from the input FASTA. Default: False",
                         dest="snps_only")
 
-
     parser.add_argument('-rn', "--rename", action="store_true",
                         help="Rename the FASTA headers to be compatible with NML standards. Default: False",
                         dest="rename")
-
 
     parser.add_argument('-nc', "--names-csv", action="store",
                         help="Use the contents of a CSV to rename the input FASTA. requires the following "
                              "column headers: original_name, new_name",
                         dest="names_csv", default="")
+
+    parser.add_argument('-ncs', "--no-constant-sites", action="store_false",
+                        help="Do not enable constant sites to be used for SNPs only tree generation. Default: Enabled",
+                        dest="const_sites")
 
     if len(sysargs) < 1:
         parser.print_help()
