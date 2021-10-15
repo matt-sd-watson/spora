@@ -9,7 +9,7 @@ def get_defaults():
         # all outbreaker input options
         KEY_FOCAL_LIST: "",
         KEY_BACKGROUND_LIST: "",
-        KEY_OUTDIR: "/home/",
+        KEY_OUTDIR: "",
         KEY_REFERENCE: "",
         KEY_MASTER_FASTA: "",
         KEY_THREADS: 4,
@@ -71,7 +71,6 @@ def setup_absolute_paths(path_to_file,value):
 def return_path_keys():
     return[KEY_FOCAL_LIST,
            KEY_BACKGROUND_LIST,
-           KEY_OUTDIR,
            KEY_REFERENCE,
            KEY_NAMES_CSV]
 

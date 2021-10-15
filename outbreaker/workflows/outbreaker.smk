@@ -1,3 +1,8 @@
+import os
+
+if not config["outdir"]: 
+    config["outdir"] = os.getcwd() + "/outbreaker/"
+
 
 rule all:
     input:
@@ -22,6 +27,7 @@ rule create_subset:
     run: 
         if config["background_list"]:
             shell("""
+            mkdir -p {config[outdir]}
             fastafurious subset -f {input.master_fasta} -l {input.focal} \
             -o {config[outdir]}/only_focal.fa
             
@@ -32,6 +38,7 @@ rule create_subset:
             """)
         else:
             shell("""
+            mkdir -p {config[outdir]}
             fastafurious subset -f {input.master_fasta} -l {input.focal} \
             -o {output.sub_fasta}
             """)

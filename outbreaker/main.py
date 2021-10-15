@@ -38,7 +38,7 @@ def main(sysargs = sys.argv[1:]):
                          dest="config")
 
     parser.add_argument('-f', "--focal-list", action="store",
-                        help="Input .txt list of focal sample names for outbreak",
+                        help="Input .txt list of focal sample names for outbreak. Required",
                         dest="focal_list", default="")
 
     parser.add_argument('-b', "--background-list", action="store",
@@ -46,15 +46,16 @@ def main(sysargs = sys.argv[1:]):
                         dest="background_list", default="")
 
     parser.add_argument('-m', "--master-fasta", action="store",
-                        help="Master fasta of COVID sequences to select from",
+                        help="Master FASTA of genomic sequences to select from. Required",
                         dest="master_fasta", default="")
 
     parser.add_argument('-o', "--output-directory", action="store",
-                        help="Path to the desired output directory",
-                        dest="outdir", default="/home/")
+                        help="Path to the desired output directory. If none is provided, "
+                             "a new folder named outbreaker will be created in the current directory",
+                        dest="outdir", default="")
 
     parser.add_argument('-r', "--reference", action="store",
-                        help=".gb file containing the desired COVID-19 reference sequence",
+                        help=".gb file containing the desired COVID-19 reference sequence. Required",
                         dest="reference", default="")
 
     parser.add_argument('-p', "--prefix", action="store",
@@ -62,7 +63,7 @@ def main(sysargs = sys.argv[1:]):
                         dest="prefix", default="outbreak")
 
     parser.add_argument('-n', "--nthreads", action="store",
-                        help="Number of threads to use for processing. Default; 4",
+                        help="Number of threads to use for processing. Default: 4",
                         dest="nthreads", default=4, type=int)
 
     parser.add_argument('-s', "--snps-only", action="store_true",
@@ -74,7 +75,7 @@ def main(sysargs = sys.argv[1:]):
                         dest="rename")
 
     parser.add_argument('-nc', "--names-csv", action="store",
-                        help="Use the contents of a CSV to rename the input FASTA. requires the following "
+                        help="Use the contents of a CSV to rename the input FASTA. Requires the following "
                              "column headers: original_name, new_name",
                         dest="names_csv", default="")
 
