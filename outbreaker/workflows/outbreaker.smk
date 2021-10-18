@@ -54,7 +54,7 @@ rule rename_headers:
             if config["names_csv"]: 
                 shell("""
                 fastafurious rename -i {input.fasta} -s {input.names_csv} \
-                -1 original_name -2 new_name
+                -1 original_name -2 new_name -o {output.renamed}
                 """)
             else:
                 fasta_to_open = open(input.fasta)
@@ -62,7 +62,10 @@ rule rename_headers:
                 for line in fasta_to_open: 
                     if line.startswith('>'):
                         line_cleaned = line.strip('>').strip()
-                        replacement_name = "ON-PHL" + line_cleaned.split("PHLON")[1].split("-SARS")[0] + "-" + line_cleaned.split("PHLON")[1].split("-SARS")[1]
+                        try: 
+                            replacement_name = "ON-PHL" + line_cleaned.split("PHLON")[1].split("-SARS")[0] + "-" + line_cleaned.split("PHLON")[1].split("-SARS")[1]
+                        except IndexError:
+                            replacement_name = line_cleaned
                         newfasta.write(">" + replacement_name + "\n")
                     else:
                         newfasta.write(line)
