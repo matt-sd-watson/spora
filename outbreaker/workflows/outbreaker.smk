@@ -63,7 +63,7 @@ rule rename_headers:
                     if line.startswith('>'):
                         line_cleaned = line.strip('>').strip()
                         try: 
-                            replacement_name = "ON-PHL" + line_cleaned.split("PHLON")[1].split("-SARS")[0] + "-" + line_cleaned.split("PHLON")[1].split("-SARS")[1]
+                            replacement_name = "ON-PHL-" + line_cleaned.split("PHLON")[1].split("-SARS")[0] + "-" + line_cleaned.split("PHLON")[1].split("-SARS")[1]
                         except IndexError:
                             replacement_name = line_cleaned
                         newfasta.write(">" + replacement_name + "\n")
