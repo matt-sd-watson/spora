@@ -1,4 +1,5 @@
 import os
+import sys
 
 if not config["outdir"]: 
     config["outdir"] = os.getcwd() + "/outbreaker/"
@@ -35,12 +36,14 @@ rule create_subset:
             -o {config[outdir]}/only_background.fa
             
             cat {config[outdir]}/only_focal.fa {config[outdir]}/only_background.fa > {output.sub_fasta}
+            echo "\nmulti-FASTA created: {output.sub_fasta}\n"
             """)
         else:
             shell("""
             mkdir -p {config[outdir]}
             fastafurious subset -f {input.master_fasta} -l {input.focal} \
             -o {output.sub_fasta}
+            echo "\nmulti-FASTA created: {output.sub_fasta}\n"
             """)
             
 rule rename_headers: 
@@ -55,6 +58,7 @@ rule rename_headers:
                 shell("""
                 fastafurious rename -i {input.fasta} -s {input.names_csv} \
                 -1 original_name -2 new_name -o {output.renamed}
+                echo "\nrenamed multi-FASTA headers into: {output.renamed}\n"
                 """)
             else:
                 fasta_to_open = open(input.fasta)
@@ -72,6 +76,8 @@ rule rename_headers:
                 
                 fasta_to_open.close()
                 newfasta.close()
+                sys.stderr.write(f'\nrenamed multi-FASTA headers into: {output.renamed}\n')
+                
  
                 
 if config["rename"]: 
@@ -95,6 +101,7 @@ rule align:
         --output {output.alignment} \
         --nthreads {config[nthreads]} \
         --fill-gaps
+        echo "\nmulti-FASTA alignment created using mafft: {output.alignment}\n"
         """
 
 rule tree: 
@@ -109,6 +116,7 @@ rule tree:
         augur tree --alignment {input.alignment} \
         --output {output.tree} \
         --nthreads {config[nthreads]}
+        echo "\nNewick tree created using iqtree: {output.tree}\n"
         """
 
 rule snps_only: 
@@ -120,6 +128,7 @@ rule snps_only:
         if config["snps_only"]:
             shell("""
             snp-sites -m -c -o {output.snps_only} {input.alignment}
+            echo "\nSNPS only multi-FASTA created using snp-sites: {output.snps_only}\n"
             """)
 
 
@@ -135,11 +144,13 @@ rule snps_only_tree:
                 shell("""
                 sites=$(snp-sites -C {input.full_fasta})
                 iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta} -fconst $sites -mfreq F -mrate G,R
+                echo "\nNewick tree created using SNPs only multi-FASTA and constant sites with iqtree2: {output.snps_only_tree}\n"
                 """)
             else:
                 shell(
                 """
                 iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta}
+                echo "\nNewick tree created using SNPs only multi-FASTA with iqtree2: {output.snps_only_tree}\n"
                 """)
 
 rule snp_dists: 
@@ -150,6 +161,7 @@ rule snp_dists:
     shell:
         """
         snp-dists -m -c {input.fasta} > {output.snp_dists}
+        echo "\nMolten SNP distance matrix created using snp-dists: {output.snp_dists}\n"
         """
         
         

@@ -137,9 +137,12 @@ def main(sysargs = sys.argv[1:]):
                                  )
 
     if status:  # translate "success" into shell exit code of 0
+        sys.stderr.write(f"\noutbreaker completed successfully.\n")
         return 0
 
+    sys.stderr.write(f"\noutbreaker did not complete successfully.\n")
     return 1
+
 
 if __name__ == '__main__':
     main()
