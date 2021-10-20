@@ -29,13 +29,21 @@ rule create_subset:
         if config["background_list"]:
             shell("""
             mkdir -p {config[outdir]}
+            
             fastafurious subset -f {input.master_fasta} -l {input.focal} \
             -o {config[outdir]}/only_focal.fa
             
             fastafurious subset -f {input.master_fasta} -l {input.background} \
             -o {config[outdir]}/only_background.fa
             
-            cat {config[outdir]}/only_focal.fa {config[outdir]}/only_background.fa > {output.sub_fasta}
+            cat {config[outdir]}/only_focal.fa {config[outdir]}/only_background.fa > {config[outdir]}/all.fa
+            dup_sams=$(grep ">" {config[outdir]}/all.fa | sed 's/>//' | sort | uniq -d)
+            original_lines=$(grep ">" {config[outdir]}/all.fa | wc -l)
+            awk '/^>/{{f=!d[$1];d[$1]=1}}f' {config[outdir]}/all.fa > {output.sub_fasta}
+            remaining_lines=$(grep ">" {output.sub_fasta} | wc -l)
+            rm {config[outdir]}/all.fa
+            echo "\n$(($original_lines-$remaining_lines)) duplicate samples were removed:\n"
+            echo "\n$dup_sams"
             echo "\nmulti-FASTA created: {output.sub_fasta}\n"
             """)
         else:

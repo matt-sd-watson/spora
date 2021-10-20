@@ -133,7 +133,7 @@ def main(sysargs = sys.argv[1:]):
     snake_file = get_primary_snakefile(thisdir)
 
     status = snakemake.snakemake(snake_file, printshellcmds=True, forceall=True, force_incomplete=True,
-                                 config=config, cores=args.nthreads, lock=False
+                                 config=config, cores=args.nthreads, lock=False, quiet = True
                                  )
 
     if status:  # translate "success" into shell exit code of 0
