@@ -8,6 +8,7 @@ if not config["outdir"]:
 rule all:
     input:
         os.path.join(config["outdir"], config["prefix"] + ".fa"),
+        os.path.join(config["outdir"], config["prefix"] + "_filtered.fa") if config["filter"] else [],
         os.path.join(config["outdir"], config["prefix"] + "_renamed.fa") if config["rename"] else [],
         os.path.join(config["outdir"], config["prefix"] + "_aln.fasta"),
         os.path.join(config["outdir"], config["prefix"]+ "_tree.nwk"),
@@ -54,9 +55,21 @@ rule create_subset:
             echo "\nmulti-FASTA created: {output.sub_fasta}\n"
             """)
             
+rule filter:
+    input: 
+        fasta = rules.create_subset.output.sub_fasta
+    output: 
+        filtered = os.path.join(config["outdir"], config["prefix"] + "_filtered.fa")
+    run:
+        if config["filter"]: 
+            shell("""
+            fastafurious filter -i {input.fasta} -l {config[genome_length]} \
+            -c {config[genome_completeness]} -o {output.filtered}
+            """)
+           
 rule rename_headers: 
     input: 
-        fasta = rules.create_subset.output.sub_fasta,
+        fasta = rules.filter.output.filtered if config["filter"] else rules.create_subset.output.sub_fasta,
         names_csv = config["names_csv"] if config["names_csv"] else []
     output: 
         renamed = os.path.join(config["outdir"], config["prefix"] + "_renamed.fa")
@@ -90,6 +103,8 @@ rule rename_headers:
                 
 if config["rename"]: 
     INPUT_ALIGN = rules.rename_headers.output.renamed
+elif not config["rename"] and config["filter"]:
+    INPUT_ALIGN = rules.filter.output.filtered
 else:
     INPUT_ALIGN = rules.create_subset.output.sub_fasta
         

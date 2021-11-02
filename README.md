@@ -37,7 +37,7 @@ optional arguments:
                         .gb file containing the desired COVID-19 reference sequence. Required
   -p PREFIX, --prefix PREFIX
                         Prefix string to label all output files. Default: outbreak
-  -n NTHREADS, --nthreads NTHREADS
+  -t NTHREADS, --nthreads NTHREADS
                         Number of threads to use for processing. Default: 4
   -s, --snps-only       Generate a snps-only FASTA from the input FASTA. Default: False
   -rn, --rename         Rename the FASTA headers to be compatible with NML standards. Default: False
@@ -45,4 +45,9 @@ optional arguments:
                         Use the contents of a CSV to rename the input FASTA. Requires the following column headers: original_name, new_name
   -ncs, --no-constant-sites
                         Do not enable constant sites to be used for SNPs only tree generation. Default: Enabled
+  -fi, --filter         Filter both the focal and background sequences based on genome completeness and length. Default: Not enabled
+  -gc GENOME_COMPLETENESS, --genome-completeness GENOME_COMPLETENESS
+                        Integer for the minimum genome completeness percentage for filtering. Default: 90
+  -gl GENOME_LENGTH, --genome-length GENOME_LENGTH
+                        Integer for the minimum genome length for filtering. Default: 29500
 ```

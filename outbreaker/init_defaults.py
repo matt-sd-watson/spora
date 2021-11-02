@@ -17,7 +17,10 @@ def get_defaults():
         KEY_RENAME: False,
         KEY_NAMES_CSV: "",
         KEY_PREFIX: "outbreak",
-        KEY_CONST_SITES: True
+        KEY_CONST_SITES: True,
+        KEY_FILTER: False,
+        KEY_GENOME_COMPLETENESS: 90,
+        KEY_GENOME_LENGTH: 29500
     }
     return default_dict
 
@@ -33,7 +36,10 @@ def valid_inputs(config):
     "rename": "rename",
     "names_csv": "names_csv",
     "prefix": "prefix",
-    "const_sites": "const_sites"}
+    "const_sites": "const_sites",
+    "filter": "filter",
+    "genome_completeness": "genome_completeness",
+    "genome_filter": "genome_filter"}
 
     for i in config:
         valid_arguments[i] = i

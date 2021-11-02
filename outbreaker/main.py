@@ -62,7 +62,7 @@ def main(sysargs = sys.argv[1:]):
                         help="Prefix string to label all output files. Default: outbreak",
                         dest="prefix", default="outbreak")
 
-    parser.add_argument('-n', "--nthreads", action="store",
+    parser.add_argument('-t', "--nthreads", action="store",
                         help="Number of threads to use for processing. Default: 4",
                         dest="nthreads", default=4, type=int)
 
@@ -82,6 +82,18 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument('-ncs', "--no-constant-sites", action="store_false",
                         help="Do not enable constant sites to be used for SNPs only tree generation. Default: Enabled",
                         dest="const_sites")
+
+    parser.add_argument('-fi', "--filter", action="store_true",
+                        help="Filter both the focal and background sequences based on genome "
+                             "completeness and length. Default: Not enabled",
+                        dest="filter")
+
+    parser.add_argument('-gc', "--genome-completeness", action="store",
+                        help="Integer for the minimum genome completeness percentage for filtering. Default: 90",
+                        dest="genome_completeness", default=90, type=int)
+    parser.add_argument('-gl', "--genome-length", action="store",
+                        help="Integer for the minimum genome length for filtering. Default: 29500",
+                        dest="genome_length", default=29500, type=int)
 
     if len(sysargs) < 1:
         parser.print_help()
