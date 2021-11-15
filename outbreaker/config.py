@@ -1,5 +1,5 @@
-KEY_FOCAL_LIST = "focal_list"
-KEY_BACKGROUND_LIST = "background_list"
+KEY_FOCAL_SEQS = "focal_seqs"
+KEY_BACKGROUND_SEQS = "background_seqs"
 KEY_OUTDIR = "outdir"
 KEY_REFERENCE = "reference"
 KEY_MASTER_FASTA = "master_fasta"

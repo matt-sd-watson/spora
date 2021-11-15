@@ -7,8 +7,8 @@ def get_defaults():
 
     default_dict = {
         # all outbreaker input options
-        KEY_FOCAL_LIST: "",
-        KEY_BACKGROUND_LIST: "",
+        KEY_FOCAL_SEQS: "",
+        KEY_BACKGROUND_SEQS: "",
         KEY_OUTDIR: "",
         KEY_REFERENCE: "",
         KEY_MASTER_FASTA: "",
@@ -27,8 +27,8 @@ def get_defaults():
 def valid_inputs(config):
 
     valid_arguments = {
-    "focal_list": "focal_list",
-    "background_list": "background_list",
+    "focal_seqs": "focal_seqs",
+    "background_seqs": "background_seqs",
     "outdir": "outdir",
     "reference": "reference",
     "nthreads": "nthreads",
@@ -75,10 +75,11 @@ def setup_absolute_paths(path_to_file,value):
     return os.path.join(path_to_file,value)
 
 def return_path_keys():
-    return[KEY_FOCAL_LIST,
-           KEY_BACKGROUND_LIST,
+    return[KEY_FOCAL_SEQS,
+           KEY_BACKGROUND_SEQS,
            KEY_REFERENCE,
-           KEY_NAMES_CSV]
+           KEY_NAMES_CSV,
+           KEY_MASTER_FASTA]
 
 def parse_yaml_file(configfile, configdict):
     path_keys = return_path_keys()
