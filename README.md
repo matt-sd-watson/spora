@@ -25,12 +25,13 @@ optional arguments:
   -h, --help            Show the help output and exit.
   -c CONFIG, --config CONFIG
                         Input config file in yaml format, all command line arguments can be passed via the config file.
-  -f FOCAL_LIST, --focal-list FOCAL_LIST
-                        Input .txt list of focal sample names for outbreak. Required
-  -b BACKGROUND_LIST, --background-list BACKGROUND_LIST
-                        Optional input .txt list of background sample names to add to analysis
+  -f FOCAL_SEQS, --focal-sequences FOCAL_SEQS
+                        Input .txt list or multi-FASTA focal samples for outbreak. Required
+  -b BACKGROUND_SEQS, --background-sequences BACKGROUND_SEQS
+                        Optional input .txt list or multi-FASTA background samples to add to analysis
   -m MASTER_FASTA, --master-fasta MASTER_FASTA
-                        Master FASTA of genomic sequences to select from. Required
+                        Master FASTA of genomic sequences to select from. Required if either --focal-sequences or --background-sequences are not supplied in
+                        FASTA format
   -o OUTDIR, --output-directory OUTDIR
                         Path to the desired output directory. If none is provided, a new folder named outbreaker will be created in the current directory
   -r REFERENCE, --reference REFERENCE
