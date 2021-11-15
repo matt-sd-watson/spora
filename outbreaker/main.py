@@ -10,8 +10,12 @@ import yaml
 cwd = os.getcwd()
 thisdir = os.path.abspath(os.path.dirname(__file__))
 
+
+def isFasta(input):
+    return input.endswith(('.fa', '.fasta', '.FA', '.FASTA'))
+
 # set mandatory input args from either config or CLI
-mandatory = set(["focal_list", "reference", "master_fasta"])
+# mandatory = set(["focal_list", "reference", "master_fasta"])
 
 def get_primary_snakefile(thisdir):
     snakefile = os.path.join(thisdir, 'workflows', 'outbreaker.smk')
@@ -37,16 +41,17 @@ def main(sysargs = sys.argv[1:]):
                          help="Input config file in yaml format, all command line arguments can be passed via the config file.",
                          dest="config")
 
-    parser.add_argument('-f', "--focal-list", action="store",
-                        help="Input .txt list of focal sample names for outbreak. Required",
-                        dest="focal_list", default="")
+    parser.add_argument('-f', "--focal-sequences", action="store",
+                        help="Input .txt list or multi-FASTA focal samples for outbreak. Required",
+                        dest="focal_seqs", default="")
 
-    parser.add_argument('-b', "--background-list", action="store",
-                        help="Optional input .txt list of background sample names to add to analysis",
-                        dest="background_list", default="")
+    parser.add_argument('-b', "--background-sequences", action="store",
+                        help="Optional input .txt list or multi-FASTA background samples to add to analysis",
+                        dest="background_seqs", default="")
 
     parser.add_argument('-m', "--master-fasta", action="store",
-                        help="Master FASTA of genomic sequences to select from. Required",
+                        help="Master FASTA of genomic sequences to select from. Required if either --focal-sequences "
+                             "or --background-sequences are not supplied in FASTA format",
                         dest="master_fasta", default="")
 
     parser.add_argument('-o', "--output-directory", action="store",
@@ -108,6 +113,17 @@ def main(sysargs = sys.argv[1:]):
         with open(args.config, "r") as f:
             args_to_dict = defaults.load_yaml(f)
 
+        config = defaults.setup_config_dict(cwd, args.config)
+
+        if isFasta(str(config["focal_seqs"])):
+            # if both focal and background are fasta, no need for master file
+            if config["background_seqs"] == '' or isFasta(str(config["background_seqs"])):
+                mandatory = set(["focal_seqs", "reference"])
+            # if focal is fasta but background is not, keep master file
+            elif config["background_seqs"] != '' or not isFasta(str(config["background_seqs"])):
+                mandatory = set(["focal_seqs", "reference", "master_fasta"])
+        else:
+            mandatory = set(["focal_seqs", "reference", "master_fasta"])
 
         current_keys = set([key for key in args_to_dict])
         if len(current_keys.intersection(mandatory)) != len(mandatory):
@@ -124,12 +140,19 @@ def main(sysargs = sys.argv[1:]):
             sys.stderr.write(f'ERROR: Please review the config inputs\n')
             sys.exit(-1)
 
-
-        config = defaults.setup_config_dict(cwd, args.config)
-
     else:
         # if the args are not passed in a config file, create a config dictionary for snakemake
         config = vars(args)
+
+        if isFasta(str(config["focal_seqs"])):
+            # if both focal and background are fasta, no need for master file
+            if config["background_seqs"] == '' or isFasta(str(config["background_seqs"])):
+                mandatory = set(["focal_seqs", "reference"])
+            # if focal is fasta but background is not, keep master file
+            elif config["background_seqs"] != '' or not isFasta(str(config["background_seqs"])):
+                mandatory = set(["focal_seqs", "reference", "master_fasta"])
+        else:
+            mandatory = set(["focal_seqs", "reference", "master_fasta"])
 
         all_valid_inputs = True
         for key in config.keys():
@@ -154,7 +177,6 @@ def main(sysargs = sys.argv[1:]):
 
     sys.stderr.write(f"\noutbreaker did not complete successfully.\n")
     return 1
-
 
 if __name__ == '__main__':
     main()

@@ -3,6 +3,9 @@ import sys
 
 if not config["outdir"]: 
     config["outdir"] = os.getcwd() + "/outbreaker/"
+    
+def isFasta(input):
+    return input.endswith(('.fa', '.fasta', '.FA', '.FASTA'))
 
 
 rule all:
@@ -19,41 +22,99 @@ rule all:
         
 rule create_subset:
     input:
-        focal = config["focal_list"],
-        master_fasta = config["master_fasta"],
-        background = config["background_list"] if config["background_list"] else []
+        focal = config["focal_seqs"],
+        master_fasta = config["master_fasta"] if not isFasta(str(config["background_seqs"])) and config["background_seqs"] or not isFasta(str(config["focal_seqs"])) else [],
+        background = config["background_seqs"] if config["background_seqs"] else []
     
-    output: 
+    output:
         sub_fasta = os.path.join(config["outdir"], config["prefix"] + ".fa")
      
-    run: 
-        if config["background_list"]:
-            shell("""
-            mkdir -p {config[outdir]}
+    run:
+        # if neither is a FASTA, create the subset
+        if not isFasta(str(config["background_seqs"])) and not isFasta(str(config["focal_seqs"])):
+            if config["background_seqs"]:
+                shell("""
+                mkdir -p {config[outdir]}
             
-            fastafurious subset -f {input.master_fasta} -l {input.focal} \
-            -o {config[outdir]}/only_focal.fa
+                fastafurious subset -f {input.master_fasta} -l {input.focal} \
+                -o {config[outdir]}/only_focal.fa
             
-            fastafurious subset -f {input.master_fasta} -l {input.background} \
-            -o {config[outdir]}/only_background.fa
+                fastafurious subset -f {input.master_fasta} -l {input.background} \
+                -o {config[outdir]}/only_background.fa
             
-            cat {config[outdir]}/only_focal.fa {config[outdir]}/only_background.fa > {config[outdir]}/all.fa
-            dup_sams=$(grep ">" {config[outdir]}/all.fa | sed 's/>//' | sort | uniq -d)
-            original_lines=$(grep ">" {config[outdir]}/all.fa | wc -l)
-            awk '/^>/{{f=!d[$1];d[$1]=1}}f' {config[outdir]}/all.fa > {output.sub_fasta}
-            remaining_lines=$(grep ">" {output.sub_fasta} | wc -l)
-            rm {config[outdir]}/all.fa
-            echo "\n$(($original_lines-$remaining_lines)) duplicate samples were removed:\n"
-            echo "\n$dup_sams"
-            echo "\nmulti-FASTA created: {output.sub_fasta}\n"
-            """)
+                cat {config[outdir]}/only_focal.fa {config[outdir]}/only_background.fa > {config[outdir]}/all.fa
+                dup_sams=$(grep ">" {config[outdir]}/all.fa | sed 's/>//' | sort | uniq -d)
+                original_lines=$(grep ">" {config[outdir]}/all.fa | wc -l)
+                awk '/^>/{{f=!d[$1];d[$1]=1}}f' {config[outdir]}/all.fa > {output.sub_fasta}
+                remaining_lines=$(grep ">" {output.sub_fasta} | wc -l)
+                rm {config[outdir]}/all.fa
+                echo "\n$(($original_lines-$remaining_lines)) duplicate samples were removed:\n"
+                echo "\n$dup_sams"
+                echo "\nmulti-FASTA created: {output.sub_fasta}\n"
+                """)
+            else:
+                shell("""
+                mkdir -p {config[outdir]}
+                fastafurious subset -f {input.master_fasta} -l {input.focal} \
+                -o {output.sub_fasta}
+                echo "\nmulti-FASTA created: {output.sub_fasta}\n"
+                """)
         else:
-            shell("""
-            mkdir -p {config[outdir]}
-            fastafurious subset -f {input.master_fasta} -l {input.focal} \
-            -o {output.sub_fasta}
-            echo "\nmulti-FASTA created: {output.sub_fasta}\n"
-            """)
+            # if one of them is a FASTA, create the subset for the other and cat
+            if config["background_seqs"]:
+                # if background is not FASTA but focal is
+                if not isFasta(str(config["background_seqs"])) and isFasta(str(config["focal_seqs"])):
+                    shell("""
+                    mkdir -p {config[outdir]}
+                    fastafurious subset -f {input.master_fasta} -l {input.background} \
+                    -o {config[outdir]}/only_background.fa
+                    cat {input.focal} {config[outdir]}/only_background.fa > {config[outdir]}/all.fa
+                    dup_sams=$(grep ">" {config[outdir]}/all.fa | sed 's/>//' | sort | uniq -d)
+                    original_lines=$(grep ">" {config[outdir]}/all.fa | wc -l)
+                    awk '/^>/{{f=!d[$1];d[$1]=1}}f' {config[outdir]}/all.fa > {output.sub_fasta}
+                    remaining_lines=$(grep ">" {output.sub_fasta} | wc -l)
+                    rm {config[outdir]}/all.fa
+                    echo "\n$(($original_lines-$remaining_lines)) duplicate samples were removed:\n"
+                    echo "\n$dup_sams"
+                    echo "\nmulti-FASTA created: {output.sub_fasta}\n"
+                    """)
+                # if background is FASTA but focal is not    
+                elif isFasta(str(config["background_seqs"])) and not isFasta(str(config["focal_seqs"])):
+                    shell("""
+                    mkdir -p {config[outdir]}
+                    fastafurious subset -f {input.master_fasta} -l {input.focal} \
+                    -o {config[outdir]}/only_focal.fa
+                    cat {input.background} {config[outdir]}/only_focal.fa > {config[outdir]}/all.fa
+                    dup_sams=$(grep ">" {config[outdir]}/all.fa | sed 's/>//' | sort | uniq -d)
+                    original_lines=$(grep ">" {config[outdir]}/all.fa | wc -l)
+                    awk '/^>/{{f=!d[$1];d[$1]=1}}f' {config[outdir]}/all.fa > {output.sub_fasta}
+                    remaining_lines=$(grep ">" {output.sub_fasta} | wc -l)
+                    rm {config[outdir]}/all.fa
+                    echo "\n$(($original_lines-$remaining_lines)) duplicate samples were removed:\n"
+                    echo "\n$dup_sams"
+                    echo "\nmulti-FASTA created: {output.sub_fasta}\n"
+                    """)
+                    
+                 # if both are FASTA, concat and send to output
+                else:
+                    shell("""
+                    cat {input.focal} {input.background} > {config[outdir]}/all.fa
+                    dup_sams=$(grep ">" {config[outdir]}/all.fa | sed 's/>//' | sort | uniq -d)
+                    original_lines=$(grep ">" {config[outdir]}/all.fa | wc -l)
+                    awk '/^>/{{f=!d[$1];d[$1]=1}}f' {config[outdir]}/all.fa > {output.sub_fasta}
+                    remaining_lines=$(grep ">" {output.sub_fasta} | wc -l)
+                    rm {config[outdir]}/all.fa
+                    echo "\n$(($original_lines-$remaining_lines)) duplicate samples were removed:\n"
+                    echo "\n$dup_sams"
+                    echo "\nmulti-FASTA created: {output.sub_fasta}\n"
+                    """)       
+            # if only using focal and not FASTA, copy into final output      
+            else:
+                shell("""
+                cp {input.focal} {output.sub_fasta}
+                echo "\nmulti-FASTA created: {output.sub_fasta}\n"
+                """)
+                                          
             
 rule filter:
     input: 
