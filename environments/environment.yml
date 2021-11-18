@@ -25,4 +25,4 @@ dependencies:
   - vcftools=0.1.16
   - pip:
     - Bio
-    - git+git://github.com/matt-sd-watson/FASTAfurious
+    - git+https://github.com/matt-sd-watson/FASTAfurious.git
