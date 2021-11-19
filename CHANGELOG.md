@@ -22,3 +22,9 @@
  of sample names, or as FASTA files containing the actual sequences. outbreaker 
  will assess the file ending and evaluate whether to create subsets based on the 
  names (if .txt is passed) or use the FASTA given
+ 
+ ## Version 0.4.0, 19-11-21
+ - if a previous run of iqtree2 for the SNPs only tree is detected, the console will
+ allow the user to select how to proceed. Currently the only possible selection is to confirm
+ overwriting the existing SNPs only tree analysis, or outbreaker will exit. Requires a new environment
+ installation as the logic uses click through pip. 

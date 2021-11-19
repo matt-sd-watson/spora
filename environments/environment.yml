@@ -8,6 +8,7 @@ dependencies:
   - backports=1.0
   - backports.functools_lru_cache=1.6.4
   - biopython==1.76
+  - click==8.0.3
   - fasttree=2.1.10
   - iqtree=2.1.2
   - mafft=7.480

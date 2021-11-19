@@ -1,5 +1,6 @@
 import os
 import sys
+import click
 
 if not config["outdir"]: 
     config["outdir"] = os.getcwd() + "/outbreaker/"
@@ -225,18 +226,40 @@ rule snps_only_tree:
     run: 
         if config["snps_only"]:
             if config["const_sites"]:
-                shell("""
-                sites=$(snp-sites -C {input.full_fasta})
-                iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta} -fconst $sites -mfreq F -mrate G,R
-                echo "\nNewick tree created using SNPs only multi-FASTA and constant sites with iqtree2: {output.snps_only_tree}\n"
-                """)
+                if os.path.isfile(os.path.join(config["outdir"], config["prefix"] + "_snps_only.ckp.gz")):
+                    if click.confirm('Previous SNPs only tree detected. Confirm overwriting file?', default=True):
+                        shell("""
+                        sites=$(snp-sites -C {input.full_fasta})
+                        iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta} -fconst $sites -mfreq F -mrate G,R -redo
+                        echo "\nNewick tree created using SNPs only multi-FASTA and constant sites with iqtree2: {output.snps_only_tree}\n"
+                        """)
+                    else:
+                        sys.stderr.write(f'ERROR: Please confirm overwriting the existing SNPS only tree.\n')
+                        sys.exit(-1)
+                else:
+                    shell("""
+                    sites=$(snp-sites -C {input.full_fasta})
+                    iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta} -fconst $sites -mfreq F -mrate G,R
+                    echo "\nNewick tree created using SNPs only multi-FASTA and constant sites with iqtree2: {output.snps_only_tree}\n"
+                    """)
             else:
-                shell(
-                """
-                iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta}
-                echo "\nNewick tree created using SNPs only multi-FASTA with iqtree2: {output.snps_only_tree}\n"
-                """)
-
+                if os.path.isfile(os.path.join(config["outdir"], config["prefix"] + "_snps_only.ckp.gz")):
+                    if click.confirm('Previous SNPs only tree detected. Confirm overwriting file?', default=True):
+                        shell(
+                        """
+                        iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta} -redo
+                        echo "\nNewick tree created using SNPs only multi-FASTA with iqtree2: {output.snps_only_tree}\n"
+                        """)
+                    else:
+                        sys.stderr.write(f'ERROR: Please confirm overwriting the existing SNPS only tree.\n')
+                        sys.exit(-1)
+                else:
+                    shell(
+                    """
+                    iqtree2 -alrt 1000 -bb 1000 -pre {config[outdir]}/{config[prefix]}_snps_only -s {input.snps_fasta}
+                    echo "\nNewick tree created using SNPs only multi-FASTA with iqtree2: {output.snps_only_tree}\n"
+                    """)
+                        
 rule snp_dists: 
     input: 
         fasta = rules.align.output.alignment
