@@ -1,0 +1,96 @@
+---
+title: "outbreaker Summary Report"
+author: "BCC PHO"
+output: html_document
+date: "Updated:  `r format(Sys.time(), '%B %d, %Y')`<div style=\"height: 40px;\"></div>"
+params:
+  focal_list:
+    input: file
+    value: ""
+  background_list:
+    input: file
+    value: ""
+  snp_dists: 
+    input: file
+    value: ""
+---
+
+```{r, include = F, message = F, warning = F, echo=F}
+library(knitr)
+library(tools)
+library(Biostrings)
+library(dplyr)
+library(TraMineR)
+library(DT)
+# library(ggtree)
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Focal Sequences
+
+```{r, echo = F, warning=F, message=F}
+fasta_extensions <- c("fa", "fasta", "FA", "FASTA")
+
+if (file_ext(params$focal_list) %in% fasta_extensions) {
+
+  focal_read <- readDNAStringSet(params$focal_list)
+
+  focal.fasta.names <- names(focal_read) %>%
+  as.data.frame() %>%
+  select("Focal Sequences" = ".")
+
+  datatable(as.data.frame(focal.fasta.names))
+  
+} else {
+  focal_read <- read.csv(params$focal_list, header = FALSE,
+                         na.strings=c("","NA"),
+                         stringsAsFactors=FALSE,
+                         sep="\t")
+
+  datatable(as.data.frame(focal.fasta.names))
+}
+```
+## Background Sequences
+
+```{r, echo = F, warning=F, message=F}
+
+if (file_ext(params$background_list) %in% fasta_extensions) {
+
+  background_read <- readDNAStringSet(file.path(params$focal_list))
+
+  background.fasta.names <- names(background_read) %>%
+  as.data.frame() %>%
+  select("Background Sequences" = ".")
+
+  datatable(as.data.frame(background.fasta.names))
+} else {
+  background_read <- read.csv(file.path(params$background_list), header = FALSE,
+                         na.strings=c("","NA"),
+                         stringsAsFactors=FALSE,
+                         sep="\t")
+
+   datatable(as.data.frame(background.fasta.names))
+}
+```
+
+## SNP Distances
+
+```{r, echo = F, warning=F, message=F}
+distances <- read.csv(params$snp_dists, header = FALSE,
+                         na.strings=c("","NA"),
+                         stringsAsFactors=FALSE,
+                         sep=",")
+
+distance_frame <- as.data.frame(table(distances$V3))
+colnames(distance_frame) <- c("SNP Distance", "Frequency")
+datatable(distance_frame)
+```
+
+## Tree
+
+
+

@@ -18,7 +18,12 @@ rule all:
         os.path.join(config["outdir"], config["prefix"]+ "_tree.nwk"),
         os.path.join(config["outdir"], config["prefix"]+ "_snps_only.fasta") if config["snps_only"] else [],
         os.path.join(config["outdir"], config["prefix"]+ "_snps_only.contree") if config["snps_only"] else [],
-        os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv")
+        os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv"),
+        os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")
+        
+
+def absol_path(input): 
+    return os.path.abspath(input)
         
         
 rule create_subset:
@@ -270,6 +275,23 @@ rule snp_dists:
         snp-dists -m -c {input.fasta} > {output.snp_dists}
         echo "\nMolten SNP distance matrix created using snp-dists: {output.snp_dists}\n"
         """
+
+rule summary_report: 
+    input: 
+        snp_read = rules.snp_dists.output.snp_dists
+    output:
+        report = os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")
+    params: 
+        script = srcdir("outbreaker_summary_report.Rmd"),
+        output = absol_path(os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")),
+        focal_read = str(config["focal_seqs"]),
+        background_read = str(config["background_seqs"]),
+        snp_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv"))
+    shell: 
+        """
+        Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}', snp_dists = '{params.snp_read}'), output_file = '{params.output}')\"
+        """
+  
         
         
 
