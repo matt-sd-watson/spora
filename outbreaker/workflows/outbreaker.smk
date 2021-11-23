@@ -278,7 +278,8 @@ rule snp_dists:
 
 rule summary_report: 
     input: 
-        snp_read = rules.snp_dists.output.snp_dists
+        snp_read = rules.snp_dists.output.snp_dists,
+        snp_tree = rules.snps_only_tree.output.snps_only_tree
     output:
         report = os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")
     params: 
@@ -286,10 +287,11 @@ rule summary_report:
         output = absol_path(os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")),
         focal_read = str(config["focal_seqs"]),
         background_read = str(config["background_seqs"]),
-        snp_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv"))
+        snp_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv")),
+        tree_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snps_only.contree"))
     shell: 
         """
-        Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}', snp_dists = '{params.snp_read}'), output_file = '{params.output}')\"
+        Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}', snp_dists = '{params.snp_read}', snp_tree = '{params.tree_read}'), output_file = '{params.output}')\"
         """
   
         

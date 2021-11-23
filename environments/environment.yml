@@ -6,8 +6,6 @@ channels:
   - r
 dependencies:
   - augur=12.0.0
-  - backports=1.0
-  - backports.functools_lru_cache=1.6.4
   - biopython==1.76
   - bioconductor-Biostrings
   - bioconductor-ggtree
@@ -27,6 +25,7 @@ dependencies:
   - r-base=>3.6.3
   - r-dplyr=1.0.7
   - r-dt
+  - r-heatmaply
   - r-markdown
   - r-essentials
   - r-traminer
@@ -37,4 +36,4 @@ dependencies:
   - vcftools=0.1.16
   - pip:
     - Bio
-    - git+git://github.com/matt-sd-watson/FASTAfurious
+    - git+https://github.com/matt-sd-watson/FASTAfurious.git

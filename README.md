@@ -2,17 +2,17 @@
 
 snakemake and Python integrated workflow for intermediate file generation for COVID outbreak analysis
 
-## Installation
+## installation
 
 ```
-git clone https://bitbucket.org/biocomputing-centre-pho/outbreaker/src/master/
-conda env create -f outbreaker/environments/environment.yml
+git clone https://github.com/matt-sd-watson/ncov_outbreaker.git
+conda env create -f ncov_outbreaker/environments/environment.yml
 conda activate ncov_outbreaker
 cd outbreaker
 pip install . 
 ```
 
-## Usage
+## usage
 ```
 usage: 
     	outbreaker -c <config.yaml> 
@@ -53,7 +53,3 @@ optional arguments:
                         Integer for the minimum genome length for filtering. Default: 29500
 ```
 
-## Documentation
-
-More extensive usage documentation for outbreaker can be found [here](https://support-coreontario-ca.atlassian.net/wiki/spaces/COVID/pages/631603218/Generating+outbreak+input+files+using+outbreaker).
-Note that access to this documentation requires an Atlassian COnfluence account that is authorized by the BCC. 

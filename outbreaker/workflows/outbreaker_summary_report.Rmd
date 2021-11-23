@@ -13,6 +13,9 @@ params:
   snp_dists: 
     input: file
     value: ""
+  snp_tree:
+    input: file
+    value: ""
 ---
 
 ```{r, include = F, message = F, warning = F, echo=F}
@@ -22,7 +25,12 @@ library(Biostrings)
 library(dplyr)
 library(TraMineR)
 library(DT)
-# library(ggtree)
+library(ggtree)
+library(ape)
+library(ggplot2)
+library(tidyverse)
+library(magrittr)
+library(heatmaply)
 ```
 
 
@@ -79,7 +87,7 @@ if (file_ext(params$background_list) %in% fasta_extensions) {
 
 ## SNP Distances
 
-```{r, echo = F, warning=F, message=F}
+```{r, echo = F, warning=F, message=F, fig.width = 12, fig.height = 10}
 distances <- read.csv(params$snp_dists, header = FALSE,
                          na.strings=c("","NA"),
                          stringsAsFactors=FALSE,
@@ -87,10 +95,49 @@ distances <- read.csv(params$snp_dists, header = FALSE,
 
 distance_frame <- as.data.frame(table(distances$V3))
 colnames(distance_frame) <- c("SNP Distance", "Frequency")
-datatable(distance_frame)
+
+matrix <- as.matrix(spread(data = distances, key = V2, value = V3) %>% set_rownames(.$V1) %>% select(-V1) %>% replace(is.na(.), 0))
+
+heatmaply(matrix, fontsize_row = 0, fontsize_col = 0, showticklabels = F)
+
 ```
 
-## Tree
+## Phylogenetics
 
+```{r echo=F, fig.height=11, fig.width=18, message=FALSE, warning=FALSE}
+
+tree <- read.tree(params$snp_tree)
+
+tree <- drop.tip(tree, c("MN908947"))
+
+## Create a dataframe of the tree
+tr.df <- fortify(tree)
+## Create a list of tree labels
+tr.df.labs <- tr.df %>%
+  filter(isTip == "TRUE") %>%
+  select(label)
+  
+tr.df.labs$category <- ifelse(tr.df.labs$label %in% as.vector(names(focal_read)), "Focal_Sequence", "Background_Sequence")
+
+annotated_tree <- ggtree(tree, size = 0.25) %<+% tr.df.labs +
+  geom_tiplab(aes(x=x, subset=category == "Focal_Sequence", label = label),  size = 2, offset = 0, colour = "red") +
+  geom_tiplab(aes(x=x, subset=category == "Background_Sequence", label = label),  size = 2, offset = 0, colour = "black") +
+  theme(plot.margin = unit(c(0,0,0,0), "cm"),
+        legend.text=element_text(size=10),
+        legend.position = c(0.9, 0.9),
+        legend.title=element_text(size=8, face = "bold"),
+        legend.box = "vertical",
+        legend.box.margin = margin(0.0,0.0,0.0,0.0,"cm"),
+        legend.box.background = element_rect(colour = "grey50"),
+        legend.spacing.y = unit(0.1, "cm"),
+        legend.key.width = unit(0.3, "cm"),
+        legend.key.height = unit(0.3, "cm"),
+        legend.spacing.x = unit(0.3, 'cm'),
+        legend.key.size = unit(3,"lines")) +
+  guides(color = guide_legend(override.aes = list(size = 1.75)))
+
+annotated_tree
+
+```
 
 
