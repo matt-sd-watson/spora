@@ -1,8 +1,7 @@
 ---
 title: "outbreaker Summary Report"
-author: "BCC PHO"
 output: html_document
-date: "Updated:  `r format(Sys.time(), '%B %d, %Y')`<div style=\"height: 40px;\"></div>"
+date: "Generated:  `r format(Sys.time(), '%B %d, %Y, %H:%M')`<div style=\"height: 40px;\"></div>"
 params:
   focal_list:
     input: file
@@ -38,7 +37,7 @@ library(heatmaply)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Focal Sequences
+## Summary Statistics
 
 ```{r, echo = F, warning=F, message=F}
 fasta_extensions <- c("fa", "fasta", "FA", "FASTA")
@@ -50,8 +49,10 @@ if (file_ext(params$focal_list) %in% fasta_extensions) {
   focal.fasta.names <- names(focal_read) %>%
   as.data.frame() %>%
   select("Focal Sequences" = ".")
+  
+  focal_input <- as.data.frame(focal.fasta.names)
 
-  datatable(as.data.frame(focal.fasta.names))
+  # datatable(as.data.frame(focal.fasta.names))
   
 } else {
   focal_read <- read.csv(params$focal_list, header = FALSE,
@@ -59,53 +60,36 @@ if (file_ext(params$focal_list) %in% fasta_extensions) {
                          stringsAsFactors=FALSE,
                          sep="\t")
 
-  datatable(as.data.frame(focal.fasta.names))
+  focal_input <- as.data.frame(focal_read)
+  # datatable(as.data.frame(focal_read))
 }
 ```
-## Background Sequences
+<br>
 
 ```{r, echo = F, warning=F, message=F}
 
 if (file_ext(params$background_list) %in% fasta_extensions) {
 
-  background_read <- readDNAStringSet(file.path(params$focal_list))
+  background_read <- readDNAStringSet(file.path(params$background_list))
 
   background.fasta.names <- names(background_read) %>%
   as.data.frame() %>%
   select("Background Sequences" = ".")
 
-  datatable(as.data.frame(background.fasta.names))
+  background_input <- as.data.frame(background.fasta.names)
+  # datatable(as.data.frame(background.fasta.names))
 } else {
   background_read <- read.csv(file.path(params$background_list), header = FALSE,
                          na.strings=c("","NA"),
                          stringsAsFactors=FALSE,
                          sep="\t")
-
-   datatable(as.data.frame(background.fasta.names))
+  
+  background_input <- as.data.frame(background_read)
+  # datatable(as.data.frame(background.fasta.names))
 }
 ```
 
-## SNP Distances
-
-```{r, echo = F, warning=F, message=F, fig.width = 12, fig.height = 10}
-distances <- read.csv(params$snp_dists, header = FALSE,
-                         na.strings=c("","NA"),
-                         stringsAsFactors=FALSE,
-                         sep=",")
-
-distance_frame <- as.data.frame(table(distances$V3))
-colnames(distance_frame) <- c("SNP Distance", "Frequency")
-
-matrix <- as.matrix(spread(data = distances, key = V2, value = V3) %>% set_rownames(.$V1) %>% select(-V1) %>% replace(is.na(.), 0))
-
-heatmaply(matrix, fontsize_row = 0, fontsize_col = 0, showticklabels = F)
-
-```
-
-## Phylogenetics
-
-```{r echo=F, fig.height=11, fig.width=18, message=FALSE, warning=FALSE}
-
+```{r, echo = F, warning = F, message = F}
 tree <- read.tree(params$snp_tree)
 
 tree <- drop.tip(tree, c("MN908947"))
@@ -116,12 +100,73 @@ tr.df <- fortify(tree)
 tr.df.labs <- tr.df %>%
   filter(isTip == "TRUE") %>%
   select(label)
-  
-tr.df.labs$category <- ifelse(tr.df.labs$label %in% as.vector(names(focal_read)), "Focal_Sequence", "Background_Sequence")
 
-annotated_tree <- ggtree(tree, size = 0.25) %<+% tr.df.labs +
-  geom_tiplab(aes(x=x, subset=category == "Focal_Sequence", label = label),  size = 2, offset = 0, colour = "red") +
-  geom_tiplab(aes(x=x, subset=category == "Background_Sequence", label = label),  size = 2, offset = 0, colour = "black") +
+if (file_ext(params$background_list) %in% fasta_extensions) {
+  tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+                                  as.vector(names(focal_read)), "Focal_Sequence", "Background_Sequence")
+} else {
+  tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+                                  focal_input$V1, "Focal_Sequence", "Background_Sequence")
+}
+
+
+```
+
+
+Number of focal sequences input: **`r format (nrow(focal_input))`**
+\
+Number of background sequences input: **`r format (nrow(background_input))`**
+\
+\
+Number of focal sequences retained: **`r format (nrow(subset(tr.df.labs, category == "Focal_Sequence")))`**
+\
+Number of background sequences retained: **`r format (nrow(subset(tr.df.labs, category == "Background_Sequence")))`**
+
+
+
+## SNP Distances
+
+```{r, echo = F, warning=F, message=F}
+distances <- read.csv(params$snp_dists, header = FALSE,
+                         na.strings=c("","NA"),
+                         stringsAsFactors=FALSE,
+                         sep=",") %>% filter(! grepl("MN908947", V1) &
+                                               ! grepl("MN908947", V2))
+
+filtered <- subset(distances, V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
+                     ! V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label)
+
+distance_frame <- as.data.frame(as.data.frame(table(filtered$V3)) %>% sapply( ., as.numeric ))
+colnames(distance_frame) <- c("SNP_Distance", "Frequency")
+
+matrix <- as.matrix(spread(data = distances, key = V2, value = V3) %>% set_rownames(.$V1) %>% select(-V1) %>% replace(is.na(.), 0))
+
+```
+<br>
+
+
+Closest distance apart between one more focal and one or more background sequences: **`r format (min(distance_frame$SNP_Distance))`**
+\
+Furthest distance apart between one more focal and one or more background sequences: **`r format (max(distance_frame$SNP_Distance))`**
+
+<br>
+
+```{r, echo = F, warning=F, message=F, fig.width = 12, fig.height = 10}
+heatmaply(matrix, fontsize_row = 0, fontsize_col = 0, showticklabels = F)
+```
+
+<br>
+
+
+## Phylogenetics
+
+Focal sequences are coloured in red, while background sequences are coloured in black. 
+
+```{r echo=F, fig.height=11, fig.width=18, message=FALSE, warning=FALSE}
+
+annotated_tree <- ggtree(tree, size = 0.5) %<+% tr.df.labs +
+  geom_tiplab(aes(x=x, subset=category == "Focal_Sequence", label = label),  size = 3, offset = 0, colour = "red") +
+  geom_tiplab(aes(x=x, subset=category == "Background_Sequence", label = label),  size = 3, offset = 0, colour = "black") +
   theme(plot.margin = unit(c(0,0,0,0), "cm"),
         legend.text=element_text(size=10),
         legend.position = c(0.9, 0.9),
