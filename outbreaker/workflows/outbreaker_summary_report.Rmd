@@ -41,6 +41,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, echo = F, warning=F, message=F}
 fasta_extensions <- c("fa", "fasta", "FA", "FASTA")
+text_extensions <- c("txt", "TXT")
 
 if (file_ext(params$focal_list) %in% fasta_extensions) {
 
@@ -54,14 +55,19 @@ if (file_ext(params$focal_list) %in% fasta_extensions) {
 
   # datatable(as.data.frame(focal.fasta.names))
   
-} else {
+} else if (file_ext(params$focal_list) %in% text_extensions){
   focal_read <- read.csv(params$focal_list, header = FALSE,
                          na.strings=c("","NA"),
                          stringsAsFactors=FALSE,
                          sep="\t")
 
   focal_input <- as.data.frame(focal_read)
+  colnames(focal_input) <- c("Sequence")
   # datatable(as.data.frame(focal_read))
+} else {
+  print("Error: focal sequences were not passed as either a txt file
+        or a multi-FASTA")
+  focal_input <- data.frame(Sequence = as.character())
 }
 ```
 <br>
@@ -78,15 +84,19 @@ if (file_ext(params$background_list) %in% fasta_extensions) {
 
   background_input <- as.data.frame(background.fasta.names)
   # datatable(as.data.frame(background.fasta.names))
-} else {
+} else if (file_ext(params$background_list) %in% text_extensions) {
   background_read <- read.csv(file.path(params$background_list), header = FALSE,
                          na.strings=c("","NA"),
                          stringsAsFactors=FALSE,
                          sep="\t")
   
   background_input <- as.data.frame(background_read)
+  colnames(background_input) <- c("Sequence")
   # datatable(as.data.frame(background.fasta.names))
+} else {
+  background_input <- data.frame(Sequence = as.character())
 }
+
 ```
 
 ```{r, echo = F, warning = F, message = F}
@@ -101,12 +111,12 @@ tr.df.labs <- tr.df %>%
   filter(isTip == "TRUE") %>%
   select(label)
 
-if (file_ext(params$background_list) %in% fasta_extensions) {
+if (file_ext(params$focal_list) %in% fasta_extensions) {
   tr.df.labs$category <- ifelse(tr.df.labs$label %in%
                                   as.vector(names(focal_read)), "Focal_Sequence", "Background_Sequence")
 } else {
   tr.df.labs$category <- ifelse(tr.df.labs$label %in%
-                                  focal_input$V1, "Focal_Sequence", "Background_Sequence")
+                                  focal_input$Sequence, "Focal_Sequence", "Background_Sequence")
 }
 
 
@@ -133,26 +143,55 @@ distances <- read.csv(params$snp_dists, header = FALSE,
                          sep=",") %>% filter(! grepl("MN908947", V1) &
                                                ! grepl("MN908947", V2))
 
-filtered <- subset(distances, V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
+filtered_w_background <- subset(distances, V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
                      ! V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label)
 
-distance_frame <- as.data.frame(as.data.frame(table(filtered$V3)) %>% sapply( ., as.numeric ))
-colnames(distance_frame) <- c("SNP_Distance", "Frequency")
+filtered_only_focal <- subset(distances, V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
+                     V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label)
+
+distance_frame_only_focal <- as.data.frame(as.data.frame(table(filtered_only_focal$V3)) %>% sapply( ., as.numeric ))
+colnames(distance_frame_only_focal) <- c("SNP_Distance", "Frequency")
+
+distance_frame_w_background <- as.data.frame(as.data.frame(table(filtered_w_background$V3)) %>% sapply( ., as.numeric ))
+
+if (nrow(distance_frame_w_background) != 0) {
+  colnames(distance_frame_w_background) <- c("SNP_Distance", "Frequency")
+}
 
 matrix <- as.matrix(spread(data = distances, key = V2, value = V3) %>% set_rownames(.$V1) %>% select(-V1) %>% replace(is.na(.), 0))
+
+if (nrow(distance_frame_w_background) == 0 | any(is.infinite(distance_frame_w_background[,1]))) {
+  closest_dist_w_background <- "NA (no background sequences)"
+  farthest_dist_w_background <- "NA (no background sequences)"
+} else {
+  closest_dist_w_background <- as.numeric(min(distance_frame_w_background$SNP_Distance))
+  farthest_dist_w_background <- as.numeric(max(distance_frame_w_background$SNP_Distance))
+}
+
+closest_dist_only_focal <- as.numeric(min(distance_frame_only_focal$SNP_Distance))
+
+farthest_dist_only_focal <- as.numeric(max(distance_frame_only_focal$SNP_Distance))
 
 ```
 <br>
 
-
-Closest distance apart between one more focal and one or more background sequences: **`r format (min(distance_frame$SNP_Distance))`**
+Closest distance apart between two or more focal sequences: **`r format (closest_dist_only_focal)`**
 \
-Furthest distance apart between one more focal and one or more background sequences: **`r format (max(distance_frame$SNP_Distance))`**
+Furthest distance apart between two or more focal sequences **`r format (farthest_dist_only_focal)`**
+
+
+Closest distance apart between one more focal and one or more background sequences: **`r format (closest_dist_w_background)`**
+\
+Furthest distance apart between one more focal and one or more background sequences: **`r format (farthest_dist_w_background)`**
 
 <br>
 
 ```{r, echo = F, warning=F, message=F, fig.width = 12, fig.height = 10}
-heatmaply(matrix, fontsize_row = 0, fontsize_col = 0, showticklabels = F)
+if (nrow(matrix() >= 0)) {
+  heatmaply(matrix, fontsize_row = 0, fontsize_col = 0, showticklabels = F)
+} else {
+  print("There was an error in loading the SNP distance heatmap")
+}
 ```
 
 <br>
