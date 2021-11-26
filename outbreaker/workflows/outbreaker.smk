@@ -225,7 +225,9 @@ rule snps_only:
 rule snps_only_tree: 
     input: 
         snps_fasta = rules.snps_only.output.snps_only,
-        full_fasta = INPUT_ALIGN
+        full_fasta = INPUT_ALIGN,
+        # use tree rule as input to ensure that this analysis happens after
+        trigger_tree = rules.tree.output.tree
     output: 
         snps_only_tree = os.path.join(config["outdir"], config["prefix"] + "_snps_only.contree")
     run: 
@@ -279,7 +281,8 @@ rule snp_dists:
 rule summary_report: 
     input: 
         snp_read = rules.snp_dists.output.snp_dists,
-        snp_tree = rules.snps_only_tree.output.snps_only_tree if config["snps_only"] else rules.tree.output.tree
+        snp_tree = rules.snps_only_tree.output.snps_only_tree if config["snps_only"] else [],
+        full_tree = rules.tree.output.tree
     output:
         report = os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")
     params: 
@@ -288,10 +291,11 @@ rule summary_report:
         focal_read = str(absol_path(config["focal_seqs"])),
         background_read = str(absol_path(config["background_seqs"])),
         snp_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv")),
-        tree_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snps_only.contree")) if config["snps_only"] else absol_path(os.path.join(config["outdir"], config["prefix"]+ "_tree.nwk"))
+        full_tree_read = absol_path(os.path.join(config["outdir"], config["prefix"]+ "_tree.nwk")),
+        snp_tree_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snps_only.contree")) if config["snps_only"] else []
     shell: 
         """
-        Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}', snp_dists = '{params.snp_read}', snp_tree = '{params.tree_read}'), output_file = '{params.output}')\"
+        Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}', snp_dists = '{params.snp_read}', snp_tree = '{params.snp_tree_read}', full_tree = '{params.full_tree_read}'), output_file = '{params.output}')\"
         """
   
         
