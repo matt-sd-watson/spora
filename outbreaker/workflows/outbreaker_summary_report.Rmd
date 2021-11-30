@@ -17,6 +17,9 @@ params:
   snp_tree:
     input: file
     value: ""
+  snipit:
+    input: file
+    value: ""
 output:
   html_document:
     toc: yes
@@ -172,6 +175,18 @@ Number of background sequences retained: **`r format (nrow(subset(tr.df.labs, ca
 <br>
 <br>
 
+## SNP diversity relative to the sequence
+
+<br>
+SNP diversity figure generated using [snipit](https://github.com/aineniamh/snipit) \
+To view the image externally, please refer to this output file:
+<br>
+**`r format (as.character(params$snipit))`**
+<br>
+<br>
+![snipit](`r format (params$snipit)`)
+<br>
+
 ## SNP Distances
 
 ```{r, echo = F, warning=F, message=F}
@@ -271,7 +286,7 @@ if (closest_dist_w_background  != "NA (no background sequences)") {
 datatable(w_background_with_min, rownames= FALSE,
           colnames = rep("", ncol(w_background_with_min)))
 } else {
-  cat("NA: No background sequences were provided to outbreaker.")
+  cat("No background sequences were provided to outbreaker. SNP pairs are not shown.")
 }
 
 ```
@@ -290,7 +305,7 @@ if (farthest_dist_w_background  != "NA (no background sequences)") {
 datatable(w_background_with_max, rownames= FALSE,
           colnames = rep("", ncol(w_background_with_max)))
 } else {
-  cat("NA: No background sequences were provided to outbreaker.")
+  cat("No background sequences were provided to outbreaker. SNP pairs are not shown.")
 }
 ```
 
@@ -324,7 +339,7 @@ if (params$snp_tree != "") {
 
 <br>
 
-To perform a more detailed tree annotation, please refer to the following file paths: 
+To perform a more detailed tree annotation, please use the following paths to obtain the tree files: 
 
 iqtree, complete genomes: **`r format (as.character(params$full_tree))`**
 

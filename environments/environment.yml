@@ -37,3 +37,4 @@ dependencies:
   - pip:
     - Bio
     - git+https://github.com/matt-sd-watson/FASTAfurious.git
+    - git+https://github.com/aineniamh/snipit.git
