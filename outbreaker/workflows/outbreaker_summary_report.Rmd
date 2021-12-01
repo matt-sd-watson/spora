@@ -1,0 +1,427 @@
+---
+title: "outbreaker Summary Report"
+date: "Generated:  `r format(Sys.time(), '%B %d, %Y, %H:%M')`<div style=\"height: 40px;\"></div>"
+params:
+  focal_list:
+    input: file
+    value: ""
+  background_list:
+    input: file
+    value: ""
+  snp_dists: 
+    input: file
+    value: ""
+  full_tree: 
+    input: file
+    value: ""
+  snp_tree:
+    input: file
+    value: ""
+  snipit:
+    input: file
+    value: ""
+output:
+  html_document:
+    toc: yes
+    toc_float: no
+    toc_depth: 4
+    number_sections: no
+    theme: readable
+---
+
+```{r, include = F, message = F, warning = F, echo=F}
+library(knitr)
+library(tools)
+library(Biostrings)
+library(dplyr)
+library(TraMineR)
+library(DT)
+library(ggtree)
+library(ape)
+library(ggplot2)
+library(tidyverse)
+library(magrittr)
+library(heatmaply)
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = NA)
+```
+
+## Summary Statistics
+
+```{r, echo = F, warning=F, message=F}
+fasta_extensions <- c("fa", "fasta", "FA", "FASTA")
+text_extensions <- c("txt", "TXT")
+
+if (file_ext(params$focal_list) %in% fasta_extensions) {
+
+  focal_read <- readDNAStringSet(params$focal_list)
+
+  focal.fasta.names <- names(focal_read) %>%
+  as.data.frame() %>%
+  select("Focal Sequences" = ".")
+  
+  focal_input <- as.data.frame(focal.fasta.names)
+
+  # datatable(as.data.frame(focal.fasta.names))
+  
+} else if (file_ext(params$focal_list) %in% text_extensions){
+  focal_read <- read.csv(params$focal_list, header = FALSE,
+                         na.strings=c("","NA"),
+                         stringsAsFactors=FALSE,
+                         sep="\t")
+
+  focal_input <- as.data.frame(focal_read)
+  colnames(focal_input) <- c("Sequence")
+  # datatable(as.data.frame(focal_read))
+} else {
+  cat("Error: focal sequences were not passed as either a txt file
+        or a multi-FASTA")
+  focal_input <- data.frame(Sequence = as.character())
+}
+```
+
+```{r, echo = F, warning=F, message=F}
+
+if (file_ext(params$background_list) %in% fasta_extensions) {
+
+  background_read <- readDNAStringSet(file.path(params$background_list))
+
+  background.fasta.names <- names(background_read) %>%
+  as.data.frame() %>%
+  select("Background Sequences" = ".")
+
+  background_input <- as.data.frame(background.fasta.names)
+  # datatable(as.data.frame(background.fasta.names))
+} else if (file_ext(params$background_list) %in% text_extensions) {
+  background_read <- read.csv(file.path(params$background_list), header = FALSE,
+                         na.strings=c("","NA"),
+                         stringsAsFactors=FALSE,
+                         sep="\t")
+  
+  background_input <- as.data.frame(background_read)
+  colnames(background_input) <- c("Sequence")
+  # datatable(as.data.frame(background.fasta.names))
+} else {
+  background_input <- data.frame(Sequence = as.character())
+}
+
+```
+
+```{r, echo = F, warning = F, message = F}
+tree <- read.tree(params$full_tree)
+
+tree <- drop.tip(tree, c("MN908947"))
+
+## Create a dataframe of the tree
+tr.df <- fortify(tree)
+## Create a list of tree labels
+tr.df.labs <- tr.df %>%
+  filter(isTip == "TRUE") %>%
+  select(label)
+
+if (file_ext(params$focal_list) %in% fasta_extensions) {
+  tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+                                  as.vector(names(focal_read)), "Focal_Sequence", "Background_Sequence")
+} else {
+  tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+                                  focal_input$Sequence, "Focal_Sequence", "Background_Sequence")
+}
+
+
+```
+
+```{r, echo = F, message = F, warning = F}
+
+inputs_frame <- data.frame(`Number of focal sequences input` = nrow(focal_input),
+                           `Number of focal sequences input` = nrow(background_input))
+
+retained_frame <- data.frame(`Number of focal sequences retained` = nrow(subset(tr.df.labs, category == "Focal_Sequence")),
+                             `Number of background sequences retained` = nrow(subset(tr.df.labs, category == "Background_Sequence")))
+
+
+
+# datatable(inputs_frame)
+
+
+
+```
+
+```{r, echo=F, warning=F, message=F}
+# datatable(retained_frame)
+```
+
+### Input sequences
+<br>
+Number of focal sequences input: **`r format (nrow(focal_input))`**
+\
+Number of background sequences input: **`r format (nrow(background_input))`**
+
+<br>    
+
+### Retained sequences for analysis
+outbreaker filters samples based on the following criteria: \
+   + sequence filtering if ```--filter``` is used. This will remove any sequences    that do not meet the genome completeness and length requirements set     by the user. \
+   + removal of any duplicate sequence(s) based on sequence name. If a      duplicated sequence is found in both the focal and background sequence    sets the duplicate(s) is/are removed and the retained unique sequence    is treated as a focal sequence. \
+
+<br>
+
+Number of focal sequences retained: **`r format (nrow(subset(tr.df.labs, category == "Focal_Sequence")))`**
+\
+Number of background sequences retained: **`r format (nrow(subset(tr.df.labs, category == "Background_Sequence")))`**
+
+<br>
+<br>
+
+## SNP diversity relative to the sequence
+
+<br>
+SNP diversity figure generated using [snipit](https://github.com/aineniamh/snipit) \
+To view the image externally, please refer to this output file:
+<br>
+**`r format (as.character(params$snipit))`**
+<br>
+<br>
+![snipit](`r format (params$snipit)`)
+<br>
+
+## SNP Distances
+
+```{r, echo = F, warning=F, message=F}
+distances <- read.csv(params$snp_dists, header = FALSE,
+                         na.strings=c("","NA"),
+                         stringsAsFactors=FALSE,
+                         sep=",") %>% filter(! grepl("MN908947", V1) &
+                                               ! grepl("MN908947", V2))
+
+filtered_w_background <- subset(distances, V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
+                     ! V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label)
+
+filtered_only_focal <- subset(distances, V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
+                     V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label)
+
+distance_frame_only_focal <- as.data.frame(table(filtered_only_focal$V3)) %>% mutate(Var1 = as.numeric(as.character(Var1)))
+colnames(distance_frame_only_focal) <- c("SNP_Distance", "Frequency")
+
+distance_frame_w_background <-as.data.frame(table(filtered_w_background$V3))
+
+if (nrow(distance_frame_w_background) != 0) {
+  distance_frame_w_background <- distance_frame_w_background %>% mutate(Var1 = as.numeric(as.character(Var1)))
+  colnames(distance_frame_w_background) <- c("SNP_Distance", "Frequency")
+}
+
+matrix <- as.matrix(spread(data = distances, key = V2, value = V3) %>% set_rownames(.$V1) %>% select(-V1) %>% replace(is.na(.), 0))
+
+if (nrow(distance_frame_w_background) == 0 | any(is.infinite(distance_frame_w_background[,1]))) {
+  closest_dist_w_background <- "NA (no background sequences)"
+  farthest_dist_w_background <- "NA (no background sequences)"
+} else {
+  closest_dist_w_background <- as.numeric(min(distance_frame_w_background$SNP_Distance))
+  farthest_dist_w_background <- as.numeric(max(distance_frame_w_background$SNP_Distance))
+}
+
+closest_dist_only_focal <- as.numeric(min(distance_frame_only_focal$SNP_Distance))
+
+farthest_dist_only_focal <- as.numeric(max(distance_frame_only_focal$SNP_Distance))
+
+```
+<br>
+
+### SNP summaries relative to focal sequences
+
+<br>
+
+Closest distance apart between two or more focal sequences: **`r format (closest_dist_only_focal)`**
+
+<br>
+
+```{r, echo=F, message=F, warning=F}
+focal_sams_with_min <- subset(distances, V3 == min(distance_frame_only_focal$SNP_Distance)  &
+                                V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
+                     V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label & V1 != V2) %>% select(-V3) %>%
+  # https://stackoverflow.com/questions/55752211/how-do-i-select-all-unique-combinations-of-two-columns-in-an-r-data-frame
+  # unique combinations of two columns with different order
+  filter(!duplicated(paste0(pmax(V1, V2), pmin(V1, V2))))
+
+
+
+focal_sams_with_min <- focal_sams_with_min[!duplicated(c("unique_1", "unique_2")) | duplicated(c("unique_2", "unique_1")),]
+
+
+datatable(focal_sams_with_min, rownames= FALSE, colnames = rep("", ncol(focal_sams_with_min)))
+```
+
+
+\
+Furthest distance apart between two or more focal sequences: **`r format (farthest_dist_only_focal)`**
+
+<br>
+
+```{r, echo=F, message=F, warning=F}
+focal_sams_with_max <- subset(distances, V3 == max(distance_frame_only_focal$SNP_Distance)  &
+                                V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
+                     V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label & V1 != V2) %>% select(-V3) %>%
+  filter(!duplicated(paste0(pmax(V1, V2), pmin(V1, V2))))
+
+datatable(focal_sams_with_max, rownames= FALSE,
+          colnames = rep("", ncol(focal_sams_with_max)))
+```
+
+
+Closest distance apart between one more focal and one or more background sequences: **`r format (closest_dist_w_background)`**
+
+<br>
+
+```{r, echo=F, message=F, warning=F}
+
+if (closest_dist_w_background  != "NA (no background sequences)") {
+
+  w_background_with_min <- subset(distances, V3 == min(distance_frame_w_background$SNP_Distance)  &
+                                V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
+                      ! V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label & V1 != V2) %>% select(-V3) %>%
+  filter(!duplicated(paste0(pmax(V1, V2), pmin(V1, V2))))
+
+datatable(w_background_with_min, rownames= FALSE,
+          colnames = rep("", ncol(w_background_with_min)))
+} else {
+  cat("No background sequences were provided to outbreaker. SNP pairs are not shown.")
+}
+
+```
+\
+Furthest distance apart between one more focal and one or more background sequences: **`r format (farthest_dist_w_background)`**
+
+<br>
+
+```{r, echo=F, message=F, warning=F}
+if (farthest_dist_w_background  != "NA (no background sequences)") {
+  w_background_with_max <- subset(distances, V3 == max(distance_frame_w_background$SNP_Distance)  &
+                                V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
+                      ! V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label & V1 != V2) %>% select(-V3) %>%
+  filter(!duplicated(paste0(pmax(V1, V2), pmin(V1, V2))))
+
+datatable(w_background_with_max, rownames= FALSE,
+          colnames = rep("", ncol(w_background_with_max)))
+} else {
+  cat("No background sequences were provided to outbreaker. SNP pairs are not shown.")
+}
+```
+
+<br>
+<br>
+
+### SNP heatmap (all sequences retained for analysis)
+
+<br>
+
+```{r, echo = F, warning=F, message=F, fig.width = 12, fig.height = 10}
+if (nrow(matrix() >= 0)) {
+  heatmaply(matrix, fontsize_row = 0, fontsize_col = 0, showticklabels = F)
+} else {
+  cat("There was an error in loading the SNP distance heatmap")
+}
+```
+
+<br>
+
+## Phylogenetic trees {.tabset}
+
+```{r, echo=F, message=F, warning=F}
+if (params$snp_tree != "") {
+  snps_only_tree_path <- as.character(params$snp_tree)
+} else {
+  snps_only_tree_path <- "No SNPs only tree was generated."
+}
+
+```
+
+<br>
+
+To perform a more detailed tree annotation, please use the following paths to obtain the tree files: 
+
+iqtree, complete genomes: **`r format (as.character(params$full_tree))`**
+
+iqtree, SNPs-only analysis: **`r format (snps_only_tree_path)`**
+
+<br>
+
+Focal sequences are coloured in red, while background sequences are coloured in black. 
+
+<br>
+
+
+### iqtree (complete genomes)
+
+```{r echo=F, fig.height=11, fig.width=18, message=FALSE, warning=FALSE}
+
+annotated_tree <- ggtree(tree, size = 0.5) %<+% tr.df.labs +
+  geom_tiplab(aes(x=x, subset=category == "Focal_Sequence", label = label),  size = 3, offset = 0, colour = "red") +
+  geom_tiplab(aes(x=x, subset=category == "Background_Sequence", label = label),  size = 3, offset = 0, colour = "black") +
+  theme(plot.margin = unit(c(0,0,0,0), "cm"),
+        legend.text=element_text(size=10),
+        legend.position = c(0.9, 0.9),
+        legend.title=element_text(size=8, face = "bold"),
+        legend.box = "vertical",
+        legend.box.margin = margin(0.0,0.0,0.0,0.0,"cm"),
+        legend.box.background = element_rect(colour = "grey50"),
+        legend.spacing.y = unit(0.1, "cm"),
+        legend.key.width = unit(0.3, "cm"),
+        legend.key.height = unit(0.3, "cm"),
+        legend.spacing.x = unit(0.3, 'cm'),
+        legend.key.size = unit(3,"lines")) +
+  guides(color = guide_legend(override.aes = list(size = 1.75)))
+
+annotated_tree
+
+```
+
+### iqtree (SNPs-only analysis)
+
+```{r echo=F, fig.height=11, fig.width=18, message=FALSE, warning=FALSE}
+
+if (params$snp_tree != "") {
+  tree_snps <- read.tree(params$snp_tree)
+  
+  tree_snps <- drop.tip(tree_snps, c("MN908947"))
+
+## Create a dataframe of the tree
+tr.df <- fortify(tree_snps)
+## Create a list of tree labels
+tr.df.labs <- tr.df %>%
+  filter(isTip == "TRUE") %>%
+  select(label)
+
+if (file_ext(params$focal_list) %in% fasta_extensions) {
+  tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+                                  as.vector(names(focal_read)), "Focal_Sequence", "Background_Sequence")
+} else {
+  tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+                                  focal_input$Sequence, "Focal_Sequence", "Background_Sequence")
+}
+
+  annotated_tree_snps <- ggtree(tree_snps, size = 0.5) %<+% tr.df.labs +
+  geom_tiplab(aes(x=x, subset=category == "Focal_Sequence", label = label),  size = 3, offset = 0, colour = "red") +
+  geom_tiplab(aes(x=x, subset=category == "Background_Sequence", label = label),  size = 3, offset = 0, colour = "black") +
+  theme(plot.margin = unit(c(0,0,0,0), "cm"),
+        legend.text=element_text(size=10),
+        legend.position = c(0.9, 0.9),
+        legend.title=element_text(size=8, face = "bold"),
+        legend.box = "vertical",
+        legend.box.margin = margin(0.0,0.0,0.0,0.0,"cm"),
+        legend.box.background = element_rect(colour = "grey50"),
+        legend.spacing.y = unit(0.1, "cm"),
+        legend.key.width = unit(0.3, "cm"),
+        legend.key.height = unit(0.3, "cm"),
+        legend.spacing.x = unit(0.3, 'cm'),
+        legend.key.size = unit(3,"lines")) +
+  guides(color = guide_legend(override.aes = list(size = 1.75)))
+
+annotated_tree_snps
+} else {
+  cat("No SNPs only analysis was conducted.\nPlease enable SNPs only analysis with outbreaker to generate a SNPs only phylogenetic tree.")
+}
+
+
+```

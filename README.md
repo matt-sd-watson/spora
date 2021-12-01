@@ -52,3 +52,4 @@ optional arguments:
   -gl GENOME_LENGTH, --genome-length GENOME_LENGTH
                         Integer for the minimum genome length for filtering. Default: 29500
 ```
+

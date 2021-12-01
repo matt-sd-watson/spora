@@ -15,10 +15,16 @@ rule all:
         os.path.join(config["outdir"], config["prefix"] + "_filtered.fa") if config["filter"] else [],
         os.path.join(config["outdir"], config["prefix"] + "_renamed.fa") if config["rename"] else [],
         os.path.join(config["outdir"], config["prefix"] + "_aln.fasta"),
+        os.path.join(config["outdir"], config["prefix"] + "_snipit.jpg"),
         os.path.join(config["outdir"], config["prefix"]+ "_tree.nwk"),
         os.path.join(config["outdir"], config["prefix"]+ "_snps_only.fasta") if config["snps_only"] else [],
         os.path.join(config["outdir"], config["prefix"]+ "_snps_only.contree") if config["snps_only"] else [],
-        os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv")
+        os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv"),
+        os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")
+        
+
+def absol_path(input): 
+    return os.path.abspath(input)
         
         
 rule create_subset:
@@ -189,6 +195,19 @@ rule align:
         echo "\nmulti-FASTA alignment created using mafft: {output.alignment}\n"
         """
 
+rule snipit_graph: 
+    input: 
+        alignment = rules.align.output.alignment
+    output: 
+        graph = os.path.join(config["outdir"], config["prefix"] + "_snipit.jpg")
+    shell: 
+        """
+        snipit {input.alignment} -o {config[prefix]}_snipit -f jpg --sort-by-mutation-number -d {config[outdir]}
+        """
+
+        
+        
+        
 rule tree: 
     input:
         alignment = rules.align.output.alignment
@@ -220,7 +239,9 @@ rule snps_only:
 rule snps_only_tree: 
     input: 
         snps_fasta = rules.snps_only.output.snps_only,
-        full_fasta = INPUT_ALIGN
+        full_fasta = INPUT_ALIGN,
+        # use tree rule as input to ensure that this analysis happens after
+        trigger_tree = rules.tree.output.tree
     output: 
         snps_only_tree = os.path.join(config["outdir"], config["prefix"] + "_snps_only.contree")
     run: 
@@ -270,6 +291,29 @@ rule snp_dists:
         snp-dists -m -c {input.fasta} > {output.snp_dists}
         echo "\nMolten SNP distance matrix created using snp-dists: {output.snp_dists}\n"
         """
+
+
+rule summary_report: 
+    input: 
+        snp_read = rules.snp_dists.output.snp_dists,
+        snp_tree = rules.snps_only_tree.output.snps_only_tree if config["snps_only"] else [],
+        full_tree = rules.tree.output.tree
+    output:
+        report = os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")
+    params: 
+        script = srcdir("outbreaker_summary_report.Rmd"),
+        output = absol_path(os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")),
+        focal_read = str(absol_path(config["focal_seqs"])),
+        background_read = str(absol_path(config["background_seqs"])),
+        snp_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv")),
+        full_tree_read = absol_path(os.path.join(config["outdir"], config["prefix"]+ "_tree.nwk")),
+        snp_tree_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snps_only.contree")) if config["snps_only"] else [],
+        snipit_read = os.path.join(config["outdir"], config["prefix"] + "_snipit.jpg")
+    shell: 
+        """
+        Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}', snp_dists = '{params.snp_read}', snp_tree = '{params.snp_tree_read}', full_tree = '{params.full_tree_read}', snipit = '{params.snipit_read}'), output_file = '{params.output}')\"
+        """
+  
         
         
 
