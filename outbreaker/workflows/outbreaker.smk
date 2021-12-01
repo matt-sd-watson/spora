@@ -7,6 +7,13 @@ if not config["outdir"]:
     
 def isFasta(input):
     return input.endswith(('.fa', '.fasta', '.FA', '.FASTA'))
+    
+
+def convertPythonBooleanToR(input): 
+    if input: 
+        return str("TRUE")
+    else:
+        return str ("FALSE")    
 
 
 rule all:
@@ -297,7 +304,8 @@ rule summary_report:
     input: 
         snp_read = rules.snp_dists.output.snp_dists,
         snp_tree = rules.snps_only_tree.output.snps_only_tree if config["snps_only"] else [],
-        full_tree = rules.tree.output.tree
+        full_tree = rules.tree.output.tree,
+        snipit_output = rules.snipit_graph.output.graph
     output:
         report = os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")
     params: 
@@ -308,10 +316,12 @@ rule summary_report:
         snp_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snp_dists.csv")),
         full_tree_read = absol_path(os.path.join(config["outdir"], config["prefix"]+ "_tree.nwk")),
         snp_tree_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snps_only.contree")) if config["snps_only"] else [],
-        snipit_read = os.path.join(config["outdir"], config["prefix"] + "_snipit.jpg")
+        snipit_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snipit.jpg")),
+        renamed = convertPythonBooleanToR(config["rename"]),
+        names_sheet_read = absol_path(config["names_csv"]) if config["names_csv"] else []
     shell: 
         """
-        Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}', snp_dists = '{params.snp_read}', snp_tree = '{params.snp_tree_read}', full_tree = '{params.full_tree_read}', snipit = '{params.snipit_read}'), output_file = '{params.output}')\"
+        Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}', snp_dists = '{params.snp_read}', snp_tree = '{params.snp_tree_read}', full_tree = '{params.full_tree_read}', snipit = '{params.snipit_read}', renamed = '{params.renamed}', names_csv = '{params.names_sheet_read}'), output_file = '{params.output}')\"
         """
   
         
