@@ -20,6 +20,11 @@ params:
   snipit:
     input: file
     value: ""
+  names_csv: 
+    input: file
+    value: ""
+  renamed: 
+    value: FALSE
 output:
   html_document:
     toc: yes
@@ -42,6 +47,7 @@ library(ggplot2)
 library(tidyverse)
 library(magrittr)
 library(heatmaply)
+library(stringr)
 ```
 
 
@@ -61,7 +67,7 @@ if (file_ext(params$focal_list) %in% fasta_extensions) {
 
   focal.fasta.names <- names(focal_read) %>%
   as.data.frame() %>%
-  select("Focal Sequences" = ".")
+  select("Sequence" = ".")
   
   focal_input <- as.data.frame(focal.fasta.names)
 
@@ -83,6 +89,27 @@ if (file_ext(params$focal_list) %in% fasta_extensions) {
 }
 ```
 
+```{r, echo=F, warning=F, message=F}
+
+if (params$renamed == "TRUE" & params$names_csv == "") {
+
+   new_focal_names <- as.vector(paste("ON-PHL", str_split_fixed(focal_input$Sequence, "PHLON|-SARS", 4)[,2],
+      str_split_fixed(focal_input$Sequence, "PHLON|-SARS", 4)[,3], sep = "-"))
+} else if (params$renamed == "TRUE" & params$names_csv != "") {
+  renaming_sheet <- read.csv(params$focal_list, header = FALSE,
+                         na.strings=c("","NA"),
+                         stringsAsFactors=FALSE,
+                         sep=",")
+    
+    new_focal_names <- as.vector(as.data.frame(renaming_sheet) %>% filter(new_name %in% focal_input$Sequence) %>% select(new_name))
+} else {
+  new_focal_names <- NULL
+}
+
+```
+
+
+
 ```{r, echo = F, warning=F, message=F}
 
 if (file_ext(params$background_list) %in% fasta_extensions) {
@@ -91,7 +118,7 @@ if (file_ext(params$background_list) %in% fasta_extensions) {
 
   background.fasta.names <- names(background_read) %>%
   as.data.frame() %>%
-  select("Background Sequences" = ".")
+  select("Sequence" = ".")
 
   background_input <- as.data.frame(background.fasta.names)
   # datatable(as.data.frame(background.fasta.names))
@@ -123,11 +150,22 @@ tr.df.labs <- tr.df %>%
   select(label)
 
 if (file_ext(params$focal_list) %in% fasta_extensions) {
-  tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+  if (params$renamed == "TRUE") {
+    tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+                                  new_focal_names, "Focal_Sequence", "Background_Sequence")
+  } else {
+    tr.df.labs$category <- ifelse(tr.df.labs$label %in%
                                   as.vector(names(focal_read)), "Focal_Sequence", "Background_Sequence")
+  }
+  
 } else {
-  tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+   if (params$renamed == "TRUE") {
+     tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+                                  new_focal_names, "Focal_Sequence", "Background_Sequence")
+   } else {
+     tr.df.labs$category <- ifelse(tr.df.labs$label %in%
                                   focal_input$Sequence, "Focal_Sequence", "Background_Sequence")
+   }
 }
 
 
@@ -388,17 +426,29 @@ if (params$snp_tree != "") {
 
 ## Create a dataframe of the tree
 tr.df <- fortify(tree_snps)
+
 ## Create a list of tree labels
 tr.df.labs <- tr.df %>%
   filter(isTip == "TRUE") %>%
   select(label)
 
 if (file_ext(params$focal_list) %in% fasta_extensions) {
-  tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+  if (params$renamed == "TRUE") {
+    tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+                                  new_focal_names, "Focal_Sequence", "Background_Sequence")
+  } else {
+    tr.df.labs$category <- ifelse(tr.df.labs$label %in%
                                   as.vector(names(focal_read)), "Focal_Sequence", "Background_Sequence")
+  }
+  
 } else {
-  tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+   if (params$renamed == "TRUE") {
+     tr.df.labs$category <- ifelse(tr.df.labs$label %in%
+                                  new_focal_names, "Focal_Sequence", "Background_Sequence")
+   } else {
+     tr.df.labs$category <- ifelse(tr.df.labs$label %in%
                                   focal_input$Sequence, "Focal_Sequence", "Background_Sequence")
+   }
 }
 
   annotated_tree_snps <- ggtree(tree_snps, size = 0.5) %<+% tr.df.labs +

@@ -20,7 +20,8 @@ def get_defaults():
         KEY_CONST_SITES: True,
         KEY_FILTER: False,
         KEY_GENOME_COMPLETENESS: 90,
-        KEY_GENOME_LENGTH: 29500
+        KEY_GENOME_LENGTH: 29500,
+        KEY_REPORT: False
     }
     return default_dict
 
@@ -39,7 +40,8 @@ def valid_inputs(config):
     "const_sites": "const_sites",
     "filter": "filter",
     "genome_completeness": "genome_completeness",
-    "genome_filter": "genome_filter"}
+    "genome_filter": "genome_filter",
+    "report": "report"}
 
     for i in config:
         valid_arguments[i] = i
