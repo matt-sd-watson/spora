@@ -100,6 +100,10 @@ def main(sysargs = sys.argv[1:]):
                         help="Integer for the minimum genome length for filtering. Default: 29500",
                         dest="genome_length", default=29500, type=int)
 
+    parser.add_argument('-rp', "--report", action="store_true",
+                        help="Generate a summary output report for the outbreaker run. Default: Not enabled",
+                        dest="report")
+
     if len(sysargs) < 1:
         parser.print_help()
         sys.exit(0)

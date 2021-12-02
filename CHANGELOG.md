@@ -30,11 +30,15 @@
  installation as the logic uses click through pip. 
  
  
- ## Version 0.5.0, 29-11-21
+## Version 0.5.0, 29-11-21
  - outbreaker now creates an output summary report sumamrizing the number of input sequences, SNP distance patterns relative to the focal sequences inputs, as well as basic rendering of the phylogenetic trees. The report is flexible: it will modify the outputs accordingly if either background sequences are not supplied or SNPs only analysis is not conducted. requires a majoy environment upgrade, specifically with regards to R and Bioconductor dependencies through conda
   
 
- ## Version 0.6.0, 01-12-21
+## Version 0.6.0, 01-12-21
  - outbreaker now uses snipit to create a graphic of SNP diversity relative to the reference, and includes it in the summary report. This requires an environment upgrade to add snipit through pip
  - The summary report can now handle the recognition of focal and background sequences when samples are renamed through ```--rename```.
  - Still requires teting to verify that ```--rename``` with ```--names_csv``` works in the same way as above
+
+## Minor Version 0.6.1, 02-12-21
+ - The output summary report is now an optional output to avoid rendering a large report by default with a
+   very large dataset. This can be enabled with ```--report```. By default the report is not generated. 
