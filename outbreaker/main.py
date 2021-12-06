@@ -1,4 +1,4 @@
-
+from outbreaker import __version__
 import outbreaker.init_defaults as defaults
 
 import os
@@ -103,6 +103,12 @@ def main(sysargs = sys.argv[1:]):
     parser.add_argument('-rp', "--report", action="store_true",
                         help="Generate a summary output report for the outbreaker run. Default: Not enabled",
                         dest="report")
+
+    parser.add_argument('-v', "--version", action="version",
+                        help="Show the current outbreaker version then exit.",
+                        version=f"This is outbreaker: v{__version__}")
+
+
 
     if len(sysargs) < 1:
         parser.print_help()

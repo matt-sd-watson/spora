@@ -51,5 +51,7 @@ optional arguments:
                         Integer for the minimum genome completeness percentage for filtering. Default: 90
   -gl GENOME_LENGTH, --genome-length GENOME_LENGTH
                         Integer for the minimum genome length for filtering. Default: 29500
+  -rp, --report         Generate a summary output report for the outbreaker run. Default: Not enabled
+  -v, --version         Show the current outbreaker version then exit.
 ```
 
