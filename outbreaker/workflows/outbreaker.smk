@@ -318,12 +318,14 @@ rule summary_report:
         snp_tree_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snps_only.contree")) if config["snps_only"] else [],
         snipit_read = absol_path(os.path.join(config["outdir"], config["prefix"] + "_snipit.jpg")),
         renamed = convertPythonBooleanToR(config["rename"]),
-        names_sheet_read = absol_path(config["names_csv"]) if config["names_csv"] else []
+        names_sheet_read = absol_path(config["names_csv"]) if config["names_csv"] else [],
+        prefix_input = str(config["prefix"]),
+        report_output = absol_path(os.path.join(config["outdir"])) + "/"
     run:
         if config["report"]:
             shell( 
             """
-            Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}',     snp_dists = '{params.snp_read}', snp_tree = '{params.snp_tree_read}', full_tree = '{params.full_tree_read}', snipit = '{params.snipit_read}', renamed = '{params.renamed}', names_csv = '{params.names_sheet_read}'), output_file = '{params.output}')\"
+            Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}',     snp_dists = '{params.snp_read}', snp_tree = '{params.snp_tree_read}', full_tree = '{params.full_tree_read}', snipit = '{params.snipit_read}', renamed = '{params.renamed}', names_csv = '{params.names_sheet_read}', outbreak_prefix = '{params.prefix_input}', outbreak_directory = '{params.report_output}'), output_file = '{params.output}')\"
             """)
   
         
