@@ -31,7 +31,7 @@
  
  
 ## Version 0.5.0, 29-11-21
- - outbreaker now creates an output summary report sumamrizing the number of input sequences, SNP distance patterns relative to the focal sequences inputs, as well as basic rendering of the phylogenetic trees. The report is flexible: it will modify the outputs accordingly if either background sequences are not supplied or SNPs only analysis is not conducted. requires a majoy environment upgrade, specifically with regards to R and Bioconductor dependencies through conda
+ - outbreaker now creates an output summary report summarizing the number of input sequences, SNP distance patterns relative to the focal sequences inputs, as well as basic rendering of the phylogenetic trees. The report is flexible: it will modify the outputs accordingly if either background sequences are not supplied or SNPs only analysis is not conducted. requires a majoy environment upgrade, specifically with regards to R and Bioconductor dependencies through conda
   
 
 ## Version 0.6.0, 01-12-21
@@ -41,4 +41,9 @@
 
 ## Minor Version 0.6.1, 02-12-21
  - The output summary report is now an optional output to avoid rendering a large report by default with a
-   very large dataset. This can be enabled with ```--report```. By default the report is not generated. 
+   very large dataset. This can be enabled with ```--report```. By default the report is not generated.
+   
+## Minor Version 0.6.2, 07-12-21
+ - ```outbreaker -v``` or ```outbreaker --version``` will now show the current version, then exit. 
+ - In the summary report, the trees are automatically scaled with xlim to ensure that the tree labels are always visible, no matter the length of the branch
+ - In the summary report, a treescale was added for the trees that renders in either the bottom right or top right, depending on where the longest branches are. This was done to avoid having the treescale overlapping a tiplab. 
