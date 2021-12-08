@@ -408,7 +408,7 @@ Focal sequences are coloured in red, while background sequences are coloured in 
 
 ### iqtree (complete genomes)
 
-```{r echo=F, fig.height=11, fig.width=18, message=FALSE, warning=FALSE}
+```{r echo=F, fig.height=15, fig.width=18, message=FALSE, warning=FALSE}
 
 # if the lowest point on the tree is over the default legend spot,
 # move it up to the top (95% of the way)
@@ -421,19 +421,38 @@ if (subset(tr.df, y == min(tr.df$y))$x > 0.8*(max(tr.df$x)) |
     min(subset(tr.df, x == max(tr.df$x))$y) <= (sd(tr.df$y))*(
       min(tr.df$y) + 0.000001)) {
   y_coord <- 0.95*max(tr.df$y)
+  legend_offset <- 0.01*(y_coord)
 } else {
   # otherwise, keep on the bottom
   y_coord <- 0.95*min(tr.df$y)
+  legend_offset <- 1.05*(y_coord)
+}
+
+# set the tiplab size based on the number of samples in the tree
+# maintain minimum size of 3
+# set the tiplab size based on the number of samples in the tree
+# maintain minimum size of 3
+if (150/nrow(tr.df.labs) >= 3.5) {
+  if (150/nrow(tr.df.labs) <= 7) {
+    tip_size = 150/nrow(tr.df.labs)
+  } else {
+    # cap the max at 8
+    tip_size <- 7
+  }
+} else {
+  # cat the min at 3.5
+  tip_size = 3.5
 }
 
 
 annotated_tree_scaled <- ggtree(tree, size = 0.5) + xlim(c(0, 
-                                      1.15*max(tr.df$x))) +
-  geom_treescale(x = max(tr.df$x), y = y_coord, fontsize = 8)
+                                      1.25*max(tr.df$x))) +
+  geom_treescale(x = max(tr.df$x), y = y_coord, fontsize = 8,
+                 offset = legend_offset)
 
 annotated_tree <- annotated_tree_scaled %<+% tr.df.labs +
-  geom_tiplab(aes(x=x, subset=category == "Focal_Sequence", label = label),  size = 3, offset = 0, colour = "red") +
-  geom_tiplab(aes(x=x, subset=category == "Background_Sequence", label = label),  size = 3, offset = 0, colour = "black") +
+  geom_tiplab(aes(x=x, subset=category == "Focal_Sequence", label = label),  size = tip_size, offset = 0, colour = "red") +
+  geom_tiplab(aes(x=x, subset=category == "Background_Sequence", label = label),  size = tip_size, offset = 0, colour = "black") +
   theme(plot.margin = unit(c(0,0,0,0), "cm"),
         legend.text=element_text(size=10),
         legend.position = c(0.9, 0.9),
@@ -454,7 +473,7 @@ annotated_tree + geom_treescale(x = 0.1, y = 0.2, fontsize = 2)
 
 ### iqtree (SNPs-only analysis)
 
-```{r echo=F, fig.height=11, fig.width=18, message=FALSE, warning=FALSE}
+```{r echo=F, fig.height=15, fig.width=18, message=FALSE, warning=FALSE}
 
 if (params$snp_tree != "") {
   tree_snps <- read.tree(params$snp_tree)
@@ -499,17 +518,36 @@ if (subset(tr.df, y == min(tr.df$y))$x > 0.8*(max(tr.df$x)) |
     min(subset(tr.df, x == max(tr.df$x))$y) <= (sd(tr.df$y))*(
       min(tr.df$y) + 0.000001)) {
   y_coord <- 0.95*max(tr.df$y)
+  legend_offset <- 0.01*(y_coord)
 } else {
   # otherwise, keep on the bottom
   y_coord <- 0.95*min(tr.df$y)
+  legend_offset <- 1.05*(y_coord)
 }
 
+# set the tiplab size based on the number of samples in the tree
+# maintain minimum size of 3
+# set the tiplab size based on the number of samples in the tree
+# maintain minimum size of 3
+if (150/nrow(tr.df.labs) >= 3.5) {
+  if (150/nrow(tr.df.labs) <= 7.5) {
+    tip_size = 150/nrow(tr.df.labs)
+  } else {
+    # cap the max at 8
+    tip_size <- 7
+  }
+} else {
+  # cat the min at 3.5
+  tip_size = 3
+}
 annotated_tree_scaled <- ggtree(tree_snps, size = 0.5) + xlim(c(0, 
-                                      1.15*max(tr.df$x))) +
-  geom_treescale(x = max(tr.df$x), y = y_coord, fontsize = 8)
+                                      1.25*max(tr.df$x))) +
+  geom_treescale(x = max(tr.df$x), y = y_coord, fontsize = 8,
+                 offset = legend_offset)
+
   annotated_tree_snps <- annotated_tree_scaled %<+% tr.df.labs +
-  geom_tiplab(aes(x=x, subset=category == "Focal_Sequence", label = label),  size = 3, offset = 0, colour = "red") +
-  geom_tiplab(aes(x=x, subset=category == "Background_Sequence", label = label),  size = 3, offset = 0, colour = "black") +
+  geom_tiplab(aes(x=x, subset=category == "Focal_Sequence", label = label),  size = tip_size, offset = 0, colour = "red") +
+  geom_tiplab(aes(x=x, subset=category == "Background_Sequence", label = label),  size = tip_size, offset = 0, colour = "black") +
   theme(plot.margin = unit(c(0,0,0,0), "cm"),
         legend.text=element_text(size=10),
         legend.position = c(0.9, 0.9),
