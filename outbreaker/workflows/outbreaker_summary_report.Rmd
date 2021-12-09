@@ -172,7 +172,7 @@ if (file_ext(params$focal_list) %in% fasta_extensions) {
                                 new_focal_names, "Focal_Sequence", "Background_Sequence")
   } else {
     tr.df.labs$category <- ifelse(tr.df.labs$label %in%
-                                  as.vector(names(focal_read)), "Focal_Sequence", "Focal_Sequence", "Background_Sequence")
+                                  as.vector(names(focal_read)), "Focal_Sequence", "Background_Sequence")
   }
   
 } else {
