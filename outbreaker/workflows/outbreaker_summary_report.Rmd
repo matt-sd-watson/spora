@@ -112,12 +112,13 @@ if (params$renamed == "TRUE" & params$names_csv == "") {
    new_focal_names <- as.vector(paste("ON-PHL", str_split_fixed(focal_input$Sequence, "PHLON|-SARS", 4)[,2],
       str_split_fixed(focal_input$Sequence, "PHLON|-SARS", 4)[,3], sep = "-"))
 } else if (params$renamed == "TRUE" & params$names_csv != "") {
-  renaming_sheet <- read.csv(params$focal_list, header = FALSE,
+  renaming_sheet <- read.csv(params$names_csv, header = T,
                          na.strings=c("","NA"),
                          stringsAsFactors=FALSE,
                          sep=",")
     
-    new_focal_names <- as.vector(as.data.frame(renaming_sheet) %>% filter(new_name %in% focal_input$Sequence) %>% select(new_name))
+    new_focal_names <- as.vector(as.data.frame(renaming_sheet) %>% filter(original_name %in% focal_input$Sequence) %>% select(new_name))
+    new_focal_names <- as.vector(new_focal_names$new_name)
 } else {
   new_focal_names <- NULL
 }
@@ -168,10 +169,10 @@ tr.df.labs <- tr.df %>%
 if (file_ext(params$focal_list) %in% fasta_extensions) {
   if (params$renamed == "TRUE") {
     tr.df.labs$category <- ifelse(tr.df.labs$label %in%
-                                  new_focal_names, "Focal_Sequence", "Background_Sequence")
+                                new_focal_names, "Focal_Sequence", "Background_Sequence")
   } else {
     tr.df.labs$category <- ifelse(tr.df.labs$label %in%
-                                  as.vector(names(focal_read)), "Focal_Sequence", "Background_Sequence")
+                                  as.vector(names(focal_read)), "Focal_Sequence", "Focal_Sequence", "Background_Sequence")
   }
   
 } else {
