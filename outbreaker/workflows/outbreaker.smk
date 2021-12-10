@@ -128,23 +128,10 @@ rule create_subset:
                 cp {input.focal} {output.sub_fasta}
                 echo "\nmulti-FASTA created: {output.sub_fasta}\n"
                 """)
-                                          
-            
-rule filter:
-    input: 
-        fasta = rules.create_subset.output.sub_fasta
-    output: 
-        filtered = os.path.join(config["outdir"], config["prefix"] + "_filtered.fa")
-    run:
-        if config["filter"]: 
-            shell("""
-            fastafurious filter -i {input.fasta} -l {config[genome_length]} \
-            -c {config[genome_completeness]} -o {output.filtered}
-            """)
-           
+                
 rule rename_headers: 
     input: 
-        fasta = rules.filter.output.filtered if config["filter"] else rules.create_subset.output.sub_fasta,
+        fasta = rules.create_subset.output.sub_fasta,
         names_csv = config["names_csv"] if config["names_csv"] else []
     output: 
         renamed = os.path.join(config["outdir"], config["prefix"] + "_renamed.fa")
@@ -173,13 +160,27 @@ rule rename_headers:
                 fasta_to_open.close()
                 newfasta.close()
                 sys.stderr.write(f'\nrenamed multi-FASTA headers into: {output.renamed}\n')
-                
- 
-                
-if config["rename"]: 
-    INPUT_ALIGN = rules.rename_headers.output.renamed
-elif not config["rename"] and config["filter"]:
+                                          
+            
+rule filter:
+    input: 
+        fasta = rules.rename_headers.output.renamed if config["rename"] else rules.create_subset.output.sub_fasta,
+    output: 
+        filtered = os.path.join(config["outdir"], config["prefix"] + "_filtered.fa")
+    run:
+        if config["filter"]: 
+            shell("""
+            fastafurious filter -i {input.fasta} -l {config[genome_length]} \
+            -c {config[genome_completeness]} -o {output.filtered}
+            """)
+           
+
+                 
+# assess which output to pass to alignment depending on filtering and renaming set                
+if config["filter"]: 
     INPUT_ALIGN = rules.filter.output.filtered
+elif not config["filter"] and config["rename"]:
+    INPUT_ALIGN = rules.rename_headers.output.renamed
 else:
     INPUT_ALIGN = rules.create_subset.output.sub_fasta
         
