@@ -54,4 +54,4 @@
 ## Minor Version 0.6.3, 10-12-21
  - ```--names-csv``` is now compatible with the summary report 
  - I```--filter``` and ```--names-csv``` are now compatible. Previously,, if any sequences were filtered and a names CSV was supplied, there would be an error.
- - The reference ncov sequence that is copatible with MAFFT(augur align) is now included under ```/data/reference/``` as ```reference.gb``` 
+ - The reference ncov sequence that is compatible with MAFFT (augur align) is now included under ```/data/reference/``` as ```ncov_reference.gb``` 
