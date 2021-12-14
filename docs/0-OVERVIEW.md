@@ -10,5 +10,10 @@ In a suspected outbreak, the epidemiology team should establish their initial se
 Based on this, the epidemiology team can supply WGS data from cases that meet this definition and are suspected to be a starting point in the analysis. These cases are then referred to as “focal cases”. When these are not provided at the outset, cases recorded through surveillance can be scrutinized against the epidemiological “case definition” to try and identify reasonable focal cases.
 At the same time, WGS data from COVID-19 cases known to not be involved in the suspected outbreak, based on criteria that exclude them from the case definition, can be used to define the background rate of disease. These “background cases” test whether the suspected outbreak is excess instances of disease.
 
+## Workflow
+
+
+![alt text](docs/images/outbreaker_workflow.png)
+
 
 Next: Installation
