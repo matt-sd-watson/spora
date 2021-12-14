@@ -12,8 +12,9 @@ At the same time, WGS data from COVID-19 cases known to not be involved in the s
 
 ## Workflow
 
-
-![alt text](images/outbreaker_workflow.png)
+<p align="center">
+    <img src="images/outbreaker_workflow.png">
+</p>
 
 
 Next: Installation
