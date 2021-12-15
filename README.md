@@ -2,7 +2,7 @@
 
 snakemake and Python integrated workflow for intermediate file generation for COVID outbreak analysis
 
-## installation
+## Installation
 
 ```
 git clone https://github.com/matt-sd-watson/ncov_outbreaker.git
@@ -12,7 +12,17 @@ cd outbreaker
 pip install . 
 ```
 
-## usage
+## Updating
+
+```
+conda activate ncov_outbreaker
+cd ~/outbreaker
+git checkout main
+git pull
+pip install . 
+```
+
+## Usage
 ```
 usage: 
     	outbreaker -c <config.yaml> 
@@ -54,4 +64,9 @@ optional arguments:
   -rp, --report         Generate a summary output report for the outbreaker run. Default: Not enabled
   -v, --version         Show the current outbreaker version then exit.
 ```
+
+## Documentation
+
+More detailed documentation for outbreaker usage and functionality can be found [here](docs/0-OVERVIEW.md)
+
 

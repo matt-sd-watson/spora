@@ -10,7 +10,8 @@ Currently outbreaker creates its various output files all within the specified t
     • {prefix}_snipit.jpg - A jpg image that summarizes the SNP diversity among input sequences relative to the reference. generated using the software found here. \
     • {prefix}_summary_report.html - If ```--report``` is selected, then an HTMl summary report will be created in the output directory. This will contain basic information on run parameters and inputs, SNP diversity, and basic phylogenetics. Please see below for more information on the summary report.
     
-For the outbreak described above with the prefix example_oct_2021, the output directory should have a similar output as shown below. Note that this directory structure also holds the config.yaml and focal sequence list in the output directory: \
+For the outbreak described above with the prefix example_oct_2021, the output directory should have a similar output as shown below. Note that this directory structure also holds the config.yaml and focal sequence list in the output directory:
+
 
 <p align="center">
     <img src="images/outbreaker_outputs.png">
