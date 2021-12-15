@@ -2,14 +2,14 @@
 
 outbreaker accepts two modes of arguments that the user may pass: \
     • arguments listed in a config.yaml file as serialized key-value pairs \
-    • Individual CLI arguments passed through Python argparse syntax \
+    • Individual CLI arguments passed through Python argparse syntax
     
 These two modes are mutually exclusive, meaning that if passing arguments through a config.yaml file, ALL of the arguments must be passed in this method. It is also important to note that if a config file is used, and additional arguments are passed as CLI, those arguments will be overwritten by the corresponding arguments written in the config file. Therefore, it is essential that for either mode, all arguments must be passed using the same method.
 
 ## Mandatory input formats
 
 Of the arguments passed to outbreaker, the following are required (outbreaker will throw an error if they are not passed in either mode): \
-    • ```--focal_sequences```: The collection of target sequences for evaluation by outbreaker (i.e. sequences of interest to the user). These may be passed as either sample names in a .txt file, and outbreaker will parse a master FASTA to retrieve them, or directly as a multi-FASTA file. If passed as a list of names, the format should be as follows: \
+    • ```--focal_sequences```: The collection of target sequences for evaluation by outbreaker (i.e. sequences of interest to the user). These may be passed as either sample names in a .txt file, and outbreaker will parse a master FASTA to retrieve them, or directly as a multi-FASTA file. If passed as a list of names, the format should be as follows:
 ```
 head example_focal_list.txt
 seq1
@@ -19,22 +19,21 @@ seq4
 seq5
 ```
 where each line can be replaced with the specific FASTA sample header. Note that the > portion of the FASTA header should NOT be included in the list of names. \
-    • ```--reference```: The .gb file used for the alignment step with MAFFT. An example of a compatible COVID-19 reference file can be found in /data/reference/, named ncov_reference.gb \
-    • ```--master_fasta```: The master FASTA file containing all PHO sequences, from which outbreaker will subset based on input focal and (optional) background lists. \
+    • ```--reference```: The .gb file used for the alignment step with MAFFT. An example of a compatible COVID-19 reference file can be found in /data/reference/, named **ncov_reference.gb** \
+    • ```--master_fasta```: The master FASTA file containing all PHO sequences, from which outbreaker will subset based on input focal and (optional) background lists.
     
 Note: that the master_fasta input is required ONLY if either focal_sequences or background_sequences are passed as sample name lists (.txt files). If both are passed as multi-FASTA files (files with an extension of .fa or .fasta), then outbreaker will not require this file to execute. See below for background sequences, as the same formats apply to that input. 
 
 ## Optional input formats
-
     • ```--background_sequences```: The desired collection of context sequences that the user can use to analyze the focal sequences. The format of this input should follow the same rules as focal_sequences (above). \
     
 ## Sample head renaming
 
-For PHO outbreak analysis, it is common to rename a sample COVID-19 sequence with a different alias for privacy purposes, especially if the outbreak analysis is to be shared with external collaborators. A typical renaming scheme for PHO COVID-19 samples would follow the following pattern: 
+For PHO outbreak analysis, it is common to rename a sample COVID-19 sequence with a different alias for privacy purposes, especially if the outbreak analysis is to be shared with external collaborators. A typical renaming scheme for PHO COVID-19 samples would follow the following pattern: \
 Original sample name: PHLON20-SARS##### or PHLON22-SARS#####
-New sample name: ON-PHL-20-##### or ON-PHL-21-#####
+New sample name: ON-PHL-20-##### or ON-PHL-21-##### \
 where ##### denotes the specific WGS Id that is used to track the genomic sequence within the PHO laboratory. 
-outbreaker is designed to facilitate the renaming of FASTA headers to accommodate privacy guidelines and/or to use different label aliases for the outbreak. This feature can be toggled on using ```--rename```. There are two different renaming possibilities for user when ```--rename``` is enabled: 
+outbreaker is designed to facilitate the renaming of FASTA headers to accommodate privacy guidelines and/or to use different label aliases for the outbreak. This feature can be toggled on using ```--rename```. There are two different renaming possibilities for user when ```--rename``` is enabled: \
     • Option 1: The workflow will auto-detect any FASTA headers that have the format PHLON{20,21}-SARS##### and change them to ON-PHL-{20,21}-#####. If the FASTA header does not follow this format, it will be left as is (i.e. Gisaid sample headers that follow a different format, or external samples)
     • Option 2: A CSV file of FASTA labels can be supplied using --names_csv. This requires that ALL focal and background samples be included in the table. The contents of the table should have the following scheme as an example:
 original_name
@@ -53,7 +52,7 @@ The following arguments are optional for outbreaker, but may improve and augment
     • ```--prefix```: The prefix denotes a string that will tag each of the output files for a specific outbreaker run. The prefix should be descriptive of the type of analysis being done, or the internal PHO code for the specific outbreak request. If no prefix is supplied by the user, the default is to create each output file with outbreak as the prefix. \
     • ```--filter```: If enabled, the user can also set --genome-completeness and --genome-length to filter out any sequences that do not meet the required thresholds. If --filter is enabled by the other options are not set, then outbreaker will use as default filtering settings genome completeness of 90% as a genome length of 29500. By default, filtering is not enabled. \
     • ```--report```: If enabled, outbreaker will generate a summary report that contains high-level information about the outbreak run and basic analyses (see below). By default, the report is not generated. \
-    • ```--snps-only```: By default, outbreaker will conduct routine bioinformatics analyses of the input sequences based on the entire genome. Sometimes, it is beneficial to have phylogenetic analysis conducted using just the variable positions for samples relative to a genome (i.e. consider only the SNP locations for the inputs). if this option is enabled, outbreaker will also create a SNPs-only FASTA file and associated phylogenetic tree in addition to the tree using the entire genome. \
+    • ```--snps-only```: By default, outbreaker will conduct routine bioinformatics analyses of the input sequences based on the entire genome. Sometimes, it is beneficial to have phylogenetic analysis conducted using just the variable positions for samples relative to a genome (i.e. consider only the SNP locations for the inputs). if this option is enabled, outbreaker will also create a SNPs-only FASTA file and associated phylogenetic tree in addition to the tree using the entire genome.
 
 
 ### Option 1: config.yaml arguments (Recommended)
