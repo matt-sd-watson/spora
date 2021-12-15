@@ -17,4 +17,4 @@ At the same time, WGS data from COVID-19 cases known to not be involved in the s
 </p>
 
 
-Next: Installation
+[Next: Installation](1-INSTALLATION.md)
