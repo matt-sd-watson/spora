@@ -2,12 +2,6 @@
 
 snakemake and Python integrated workflow for intermediate file generation for COVID outbreak analysis
 
-## Table of Contents
-1. [Installation](##Installation)
-2. [Updating](##Updating)
-3. [Usage](##usage)
-4. [Documentation](##Documentation)
-
 ## Installation
 
 ```
