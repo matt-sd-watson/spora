@@ -1,9 +1,9 @@
 # Installation
 
 ## Requirements
-The following tools/packages are required 
-    • Python (Ubuntu installation instructions can be found here) 
-    • conda (Ubuntu installation instructions can be found here)
+The following tools/packages are required: \
+    • Python (Ubuntu installation instructions can be found here) \
+    • conda (Ubuntu installation instructions can be found here) \
 
     
 ## Basic installation from source
@@ -72,4 +72,4 @@ optional arguments:
   
 ```
 
-Next: Inputs
+[Next: Inputs](2-INPUTS.md)
