@@ -1,28 +1,34 @@
-# outbreaker
+# Installation
 
-snakemake and Python integrated workflow for intermediate file generation for COVID outbreak analysis
+## Requirements
+The following tools/packages are required: \
+    • Python (Ubuntu installation instructions can be found here) \
+    • conda (Ubuntu installation instructions can be found here)
 
-## Installation
+    
+## Basic installation from source
+
+The basic installation instructions for outbreaker are as follows: 
 
 ```
 git clone https://github.com/matt-sd-watson/ncov_outbreaker.git
-conda env create -f ncov_outbreaker/environments/environment.yml
+conda env create -f outbreaker/environments/environment.yml
 conda activate ncov_outbreaker
 cd outbreaker
-pip install . 
-```
-
-## Updating
-
-```
-conda activate ncov_outbreaker
-cd ~/outbreaker
-git checkout main
-git pull
-pip install . 
+pip install .
 ```
 
 ## Usage
+
+Test that the installation was successful using the following commands: 
+```
+outbreaker
+#OR
+outbreaker --help
+```
+
+which should result in the following output: 
+
 ```
 usage: 
     	outbreaker -c <config.yaml> 
@@ -63,10 +69,7 @@ optional arguments:
                         Integer for the minimum genome length for filtering. Default: 29500
   -rp, --report         Generate a summary output report for the outbreaker run. Default: Not enabled
   -v, --version         Show the current outbreaker version then exit.
+  
 ```
 
-## Documentation
-
-More detailed documentation for outbreaker usage and functionality can be found [here](docs/0-OVERVIEW.md)
-
-
+[Next: Inputs](2-INPUTS.md)
