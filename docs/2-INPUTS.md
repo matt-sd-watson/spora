@@ -25,6 +25,7 @@ where each line can be replaced with the specific FASTA sample header. Note that
 Note: that the master_fasta input is required ONLY if either focal_sequences or background_sequences are passed as sample name lists (.txt files). If both are passed as multi-FASTA files (files with an extension of .fa or .fasta), then outbreaker will not require this file to execute. See below for background sequences, as the same formats apply to that input. 
 
 ## Optional input formats
+The following inputs are purely optional, but may augment the types of analysis that can be conducted using outbreaker: \
     • ```--background_sequences```: The desired collection of context sequences that the user can use to analyze the focal sequences. The format of this input should follow the same rules as focal_sequences (above). \
     
 ## Sample head renaming
@@ -34,8 +35,8 @@ Original sample name: PHLON20-SARS##### or PHLON22-SARS#####
 New sample name: ON-PHL-20-##### or ON-PHL-21-##### \
 where ##### denotes the specific WGS Id that is used to track the genomic sequence within the PHO laboratory. 
 outbreaker is designed to facilitate the renaming of FASTA headers to accommodate privacy guidelines and/or to use different label aliases for the outbreak. This feature can be toggled on using ```--rename```. There are two different renaming possibilities for user when ```--rename``` is enabled: \
-    • Option 1: The workflow will auto-detect any FASTA headers that have the format PHLON{20,21}-SARS##### and change them to ON-PHL-{20,21}-#####. If the FASTA header does not follow this format, it will be left as is (i.e. Gisaid sample headers that follow a different format, or external samples)
-    • Option 2: A CSV file of FASTA labels can be supplied using --names_csv. This requires that ALL focal and background samples be included in the table. The contents of the table should have the following scheme as an example:
+    • **Option 1**: The workflow will auto-detect any FASTA headers that have the format PHLON{20,21}-SARS##### and change them to ON-PHL-{20,21}-#####. If the FASTA header does not follow this format, it will be left as is (i.e. Gisaid sample headers that follow a different format, or external samples) \
+    • **Option 2**: A CSV file of FASTA labels can be supplied using --names_csv. This requires that ALL focal and background samples be included in the table. The contents of the table should have the following scheme as an example:
 original_name
 new_name
 PHLON21-SARS29115
