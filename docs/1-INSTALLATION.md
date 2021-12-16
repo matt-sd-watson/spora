@@ -2,8 +2,8 @@
 
 ## Requirements
 The following tools/packages are required: \
-    • Python (Ubuntu installation instructions can be found here) \
-    • conda (Ubuntu installation instructions can be found here)
+    • Python (Ubuntu installation instructions can be found [here](https://docs.python-guide.org/starting/install3/linux/)) \
+    • conda (Ubuntu installation instructions can be found [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html))
 
     
 ## Basic installation from source
@@ -11,7 +11,7 @@ The following tools/packages are required: \
 The basic installation instructions for outbreaker are as follows: 
 
 ```
-git clone https://github.com/matt-sd-watson/ncov_outbreaker.git
+git clone https://github.com/matt-sd-watson/outbreaker.git
 conda env create -f outbreaker/environments/environment.yml
 conda activate ncov_outbreaker
 cd outbreaker
