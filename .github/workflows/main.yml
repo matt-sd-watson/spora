@@ -23,5 +23,5 @@ jobs:
           mamba-version: "*"
       - name: Install outbreaker
         run: pip install -e .
-      - name: Check pangolin version
+      - name: Check outbreaker version
         run: outbreaker --version
