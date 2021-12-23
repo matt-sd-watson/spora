@@ -68,8 +68,8 @@ def main(sysargs = sys.argv[1:]):
                         dest="prefix", default="outbreak")
 
     parser.add_argument('-t', "--nthreads", action="store",
-                        help="Number of threads to use for processing. Default: 4",
-                        dest="nthreads", default=4, type=int)
+                        help="Number of threads to use for processing. Default: 2",
+                        dest="nthreads", default=2, type=int)
 
     parser.add_argument('-s', "--snps-only", action="store_true",
                         help="Generate a snps-only FASTA from the input FASTA. Default: False",
