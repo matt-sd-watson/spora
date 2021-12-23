@@ -12,7 +12,7 @@ def get_defaults():
         KEY_OUTDIR: "",
         KEY_REFERENCE: "",
         KEY_MASTER_FASTA: "",
-        KEY_THREADS: 4,
+        KEY_THREADS: 2,
         KEY_SNPS_ONLY: False,
         KEY_RENAME: False,
         KEY_NAMES_CSV: "",
