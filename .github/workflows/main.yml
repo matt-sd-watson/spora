@@ -31,4 +31,4 @@ jobs:
         run: outbreaker -f data/tests/focal_seqs.fa -b data/tests/background_seqs.fa -r data/reference/ncov_reference.gb -o outbreaker_test -p test --snps-only --report
       - name: Run outbreaker test via config
         shell: bash -l {0}
-        run: outbreaker -c data/tests/test_config.yaml
+        run: outbreaker -c data/test_config.yaml
