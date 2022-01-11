@@ -69,4 +69,8 @@ optional arguments:
 
 More detailed documentation for outbreaker usage and functionality can be found [here](docs/0-OVERVIEW.md)
 
+## Acknowledgments
 
+Inspiration for code structure and design for outbreaker was inspired by [pangolin](https://github.com/cov-lineages/pangolin) and [civet](https://github.com/artic-network/civet), and minor code blocks were adopted from these software. \
+
+The **Background** section in the documentation describing outbreak definitions was written by Mark Horsman. 
