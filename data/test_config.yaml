@@ -11,3 +11,7 @@ snps_only: True
 prefix: test_config
 
 report: True
+
+rename: True
+
+names_csv: tests/names.csv
