@@ -140,7 +140,7 @@ rule rename_headers:
             if config["names_csv"]: 
                 shell("""
                 fastafurious rename -i {input.fasta} -s {input.names_csv} \
-                -1 original_name -2 new_name -o {output.renamed}
+                -1 original_name -2 new_name -o {output.renamed} -k
                 echo "\nrenamed multi-FASTA headers into: {output.renamed}\n"
                 """)
             else:
