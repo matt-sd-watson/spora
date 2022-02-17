@@ -48,10 +48,15 @@
 ## Minor Version 0.6.2, 07-12-21
  - ```outbreaker -v``` or ```outbreaker --version``` will now show the current version, then exit. 
  - In the summary report, the trees are automatically scaled with xlim to ensure that the tree labels are always visible, no matter the length of the branch
- - In the summary report, a treescale was added for the trees that renders in either the bottom right or top right, depending on where the longest branches are. This was done to avoid having the treescale overlapping a tiplab. 
+ - In the summary report, a treescale was added for the trees that renders in either the bottom right or top right, depending on where the longest branches are. This was done to avoid having the treescale overlapping a tip lab. 
   
   
 ## Minor Version 0.6.3, 10-12-21
  - ```--names-csv``` is now compatible with the summary report 
- - I```--filter``` and ```--names-csv``` are now compatible. Previously,, if any sequences were filtered and a names CSV was supplied, there would be an error.
+ - ```--filter``` and ```--names-csv``` are now compatible. Previously,, if any sequences were filtered and a names CSV was supplied, there would be an error.
  - The reference ncov sequence that is compatible with MAFFT (augur align) is now included under ```/data/reference/``` as ```ncov_reference.gb``` 
+ 
+## Minor Version 0.6.4, 17-02-22
+
+ -outbreaker now retains all sequences if ```--names-csv``` is used for renaming and not all sequences are contained in the CSV
+ - updates to the renaming behavior to be compatible with fastafurious v1.2.0 (additional warning messages)
