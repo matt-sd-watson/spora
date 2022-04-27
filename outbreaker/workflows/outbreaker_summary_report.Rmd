@@ -249,7 +249,8 @@ distances <- read.csv(params$snp_dists, header = FALSE,
                          na.strings=c("","NA"),
                          stringsAsFactors=FALSE,
                          sep=",") %>% filter(! grepl("MN908947", V1) &
-                                               ! grepl("MN908947", V2))
+                                               ! grepl("MN908947", V2)) %>%
+            filter(V1 != V2)
 
 filtered_w_background <- subset(distances, V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
                      ! V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label)
