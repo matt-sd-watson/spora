@@ -12,7 +12,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Outbreaker test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
@@ -20,8 +24,8 @@ jobs:
           environment-file: environments/environment.yml
           activate-environment: ncov_outbreaker
           channels: conda-forge,bioconda,defaults,r
+          mamba-version: "*"
       - name: Install outbreaker
-        shell: bash -l {0}
         run: pip install -e .
       - name: Check outbreaker version
         shell: bash -l {0}
