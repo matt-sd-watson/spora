@@ -29,6 +29,9 @@ params:
     value: ""
   outbreak_directory: 
     value: ""
+  name_matches: 
+    input: file
+    value: ""
 output:
   html_document:
     toc: yes
@@ -108,9 +111,10 @@ if (file_ext(params$focal_list) %in% fasta_extensions) {
 ```{r, echo=F, warning=F, message=F}
 
 if (params$renamed == "TRUE" & params$names_csv == "") {
+  
+  rename_matches <- read.csv(params$name_matches)
+  new_focal_names <- as.vector(subset(rename_matches, original_name %in% focal_input$Sequence)$new_name)
 
-   new_focal_names <- as.vector(paste("ON-PHL", str_split_fixed(focal_input$Sequence, "PHLON|-SARS", 4)[,2],
-      str_split_fixed(focal_input$Sequence, "PHLON|-SARS", 4)[,3], sep = "-"))
 } else if (params$renamed == "TRUE" & params$names_csv != "") {
   renaming_sheet <- read.csv(params$names_csv, header = T,
                          na.strings=c("","NA"),
@@ -250,16 +254,23 @@ distances <- read.csv(params$snp_dists, header = FALSE,
                          stringsAsFactors=FALSE,
                          sep=",") %>% filter(! grepl("MN908947", V1) &
                                                ! grepl("MN908947", V2)) %>%
-            filter(V1 != V2)
+                         filter(V1 != V2)
 
-filtered_w_background <- subset(distances, V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
-                     ! V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label)
+filtered_w_background <- subset(distances, V1 %in% as.vector(subset(tr.df.labs, category == "Focal_Sequence")$label) &
+                     ! V2 %in% as.vector(subset(tr.df.labs, category == "Focal_Sequence")$label))
 
-filtered_only_focal <- subset(distances, V1 %in% subset(tr.df.labs, category == "Focal_Sequence")$label &
-                     V2 %in% subset(tr.df.labs, category == "Focal_Sequence")$label)
+filtered_only_focal <- subset(distances, V1 %in% as.vector(subset(tr.df.labs, category == "Focal_Sequence")$label) &
+                     V2 %in% as.vector(subset(tr.df.labs, category == "Focal_Sequence")$label))
 
-distance_frame_only_focal <- as.data.frame(table(filtered_only_focal$V3)) %>% mutate(Var1 = as.numeric(as.character(Var1)))
+distance_frame_only_focal <- as.data.frame(table(filtered_only_focal$V3))
+
+if (nrow(distance_frame_only_focal) != 0) {
+  distance_frame_only_focal <- distance_frame_only_focal %>% mutate(Var1 = as.numeric(as.character(Var1)))
 colnames(distance_frame_only_focal) <- c("SNP_Distance", "Frequency")
+} else {
+  distance_frame_only_focal <- data.frame(SNP_Distance = numeric(),
+                                          Frequency = numeric())
+}
 
 distance_frame_w_background <-as.data.frame(table(filtered_w_background$V3))
 

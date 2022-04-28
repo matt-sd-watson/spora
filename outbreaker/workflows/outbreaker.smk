@@ -1,6 +1,7 @@
 import os
 import sys
 import click
+import pandas as pd
 
 if not config["outdir"]: 
     config["outdir"] = os.getcwd() + "/outbreaker/"
@@ -21,6 +22,7 @@ rule all:
         os.path.join(config["outdir"], config["prefix"] + ".fa"),
         os.path.join(config["outdir"], config["prefix"] + "_filtered.fa") if config["filter"] else [],
         os.path.join(config["outdir"], config["prefix"] + "_renamed.fa") if config["rename"] else [],
+        os.path.join(config["outdir"], config["prefix"] + "_rename_matches.csv") if config["rename"] and not config["names_csv"] else [],
         os.path.join(config["outdir"], config["prefix"] + "_aln.fasta"),
         os.path.join(config["outdir"], config["prefix"] + "_snipit.jpg"),
         os.path.join(config["outdir"], config["prefix"]+ "_tree.nwk"),
@@ -134,7 +136,8 @@ rule rename_headers:
         fasta = rules.create_subset.output.sub_fasta,
         names_csv = config["names_csv"] if config["names_csv"] else []
     output: 
-        renamed = os.path.join(config["outdir"], config["prefix"] + "_renamed.fa")
+        renamed = os.path.join(config["outdir"], config["prefix"] + "_renamed.fa"),
+        names_matches = os.path.join(config["outdir"], config["prefix"] + "_rename_matches.csv") if not config["names_csv"] else []
     run: 
         if config["rename"]: 
             if config["names_csv"]: 
@@ -146,19 +149,21 @@ rule rename_headers:
             else:
                 fasta_to_open = open(input.fasta)
                 newfasta = open(output.renamed, 'w')
+                names_matches = {}
+                name_counter = 1
                 for line in fasta_to_open: 
                     if line.startswith('>'):
                         line_cleaned = line.strip('>').strip()
-                        try: 
-                            replacement_name = "ON-PHL-" + line_cleaned.split("PHLON")[1].split("-SARS")[0] + "-" + line_cleaned.split("PHLON")[1].split("-SARS")[1]
-                        except IndexError:
-                            replacement_name = line_cleaned
+                        replacement_name = config["prefix"] + "_" + str(name_counter)
                         newfasta.write(">" + replacement_name + "\n")
+                        names_matches[line_cleaned] = replacement_name
+                        name_counter += 1
                     else:
                         newfasta.write(line)
                 
                 fasta_to_open.close()
                 newfasta.close()
+                pd.DataFrame(names_matches.items(), columns=['original_name', 'new_name']).to_csv(output.names_matches, index = False)
                 sys.stderr.write(f'\nrenamed multi-FASTA headers into: {output.renamed}\n')
                                           
             
@@ -321,15 +326,13 @@ rule summary_report:
         renamed = convertPythonBooleanToR(config["rename"]),
         names_sheet_read = absol_path(config["names_csv"]) if config["names_csv"] else [],
         prefix_input = str(config["prefix"]),
-        report_output = absol_path(os.path.join(config["outdir"])) + "/"
+        report_output = absol_path(os.path.join(config["outdir"])) + "/",
+        name_matches = absol_path(os.path.join(config["outdir"], config["prefix"] + "_rename_matches.csv")) if config["rename"] and not config["names_csv"] else []
     run:
         if config["report"]:
             shell( 
             """
-            Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}',     snp_dists = '{params.snp_read}', snp_tree = '{params.snp_tree_read}', full_tree = '{params.full_tree_read}', snipit = '{params.snipit_read}', renamed = '{params.renamed}', names_csv = '{params.names_sheet_read}', outbreak_prefix = '{params.prefix_input}', outbreak_directory = '{params.report_output}'), output_file = '{params.output}')\"
+            Rscript -e \"rmarkdown::render(input = '{params.script}', params = list(focal_list = '{params.focal_read}', background_list = '{params.background_read}',     snp_dists = '{params.snp_read}', snp_tree = '{params.snp_tree_read}', full_tree = '{params.full_tree_read}', snipit = '{params.snipit_read}', renamed = '{params.renamed}', names_csv = '{params.names_sheet_read}', outbreak_prefix = '{params.prefix_input}', outbreak_directory = '{params.report_output}', name_matches = '{params.name_matches}'), output_file = '{params.output}')\"
             """)
-  
-        
-        
 
 
