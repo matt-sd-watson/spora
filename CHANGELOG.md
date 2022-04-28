@@ -58,5 +58,11 @@
  
 ## Minor Version 0.6.4, 17-02-22
 
- -outbreaker now retains all sequences if ```--names-csv``` is used for renaming and not all sequences are contained in the CSV
+ - outbreaker now retains all sequences if ```--names-csv``` is used for renaming and not all sequences are contained in the CSV
  - updates to the renaming behavior to be compatible with fastafurious v1.2.0 (additional warning messages)
+ 
+## Minor Version 0.6.5, 28-04-22 (Patch)
+ - Change behaviour of renaming when no CSV is supplied. Will now use the prefix for the run to generate new names with alphanumerical sequential order (i.e. prefix_1, prefix_2) and will output the name matches as a CSV file
+ - Above fix changes fixes the error in the SNP distance plot in the HTML report when rename is used but no names CSV is supplied
+ - Addition of pytests in the CI/CD workflow
+ 

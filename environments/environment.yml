@@ -30,7 +30,7 @@ dependencies:
   - r-essentials
   - r-traminer
   - scipy=1.6.3
-  - snakemake-minimal
+  - snakemake
   - snp-dists=0.8.2
   - snp-sites=2.5.1
   - vcftools=0.1.16
