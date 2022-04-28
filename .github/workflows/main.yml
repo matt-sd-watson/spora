@@ -19,7 +19,7 @@ jobs:
         with:
           environment-file: environments/environment.yml
           activate-environment: ncov_outbreaker
-          channels: conda-forge,bioconda,defaults
+          channels: conda-forge,bioconda,defaults,r
       - name: Install outbreaker
         shell: bash -l {0}
         run: pip install -e .
