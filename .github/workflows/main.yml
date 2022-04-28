@@ -25,6 +25,8 @@ jobs:
           activate-environment: ncov_outbreaker
           channels: conda-forge,bioconda,defaults,r
           mamba-version: "*"
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade pip snakemake-minimal<=6.8.0
       - name: Install outbreaker
         run: pip install -e .
       - name: Check outbreaker version
