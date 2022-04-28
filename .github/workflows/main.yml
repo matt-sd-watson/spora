@@ -32,3 +32,6 @@ jobs:
       - name: Run outbreaker test via config
         shell: bash -l {0}
         run: outbreaker -c data/test_config.yaml
+      - name: Run pytest for outbreaker
+        shell: bash -l {0}
+        run: pytest tests/
