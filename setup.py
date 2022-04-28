@@ -13,7 +13,7 @@ setup(
     author='Matthew Watson',
     author_email='matthew.watson@oahpp.ca',
     description='snakemake and Python integrated workflow for intermediate file generation for COVID outbreak analysis',
-    install_requires = ["pandas>=1.1.5", "numpy>=1.19", "biopython>=1.79", "snakemake-minimal<=6.8.0"],
+    install_requires = ["pandas>=1.1.5", "numpy>=1.19", "biopython>=1.79", "snakemake>=7.0.0"],
     entry_points="""
     [console_scripts]
     {program} = outbreaker.main:main
