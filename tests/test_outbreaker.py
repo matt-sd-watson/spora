@@ -2,6 +2,7 @@ import os
 from outbreaker import main
 import sys
 from Bio import SeqIO
+import subprocess
 
 DATA_DIR = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/'))
 print(DATA_DIR)
@@ -59,6 +60,20 @@ class TestOutbreaker:
         with open(output_snp_dists) as f:
             lines = f.readlines()
         assert str('Renamed_8,Background_3,5\n') in lines
+
+    def test_run_with_console_output(self, tmp_path):
+
+        focal_seqs = os.path.join(DATA_DIR, 'tests/', 'focal_seqs.fa')
+        background_seqs = os.path.join(DATA_DIR, 'tests/', 'background_seqs.fa')
+        names_csv = os.path.join(DATA_DIR, 'tests/', 'names.csv')
+
+        results = subprocess.run(['outbreaker', '-f', str(focal_seqs), '-b', str(background_seqs), '--rename', '-p', 'pytest',
+                '-r', str(test_reference), '-o', str(tmp_path), '--names-csv', str(names_csv)],
+                                 stdout=subprocess.PIPE)
+        assert 'WARNING: the following record has no match in samples IDs and will be kept with the original name: Focal_4' \
+               in results.stdout.decode('utf-8')
+        
+
 
         
 
