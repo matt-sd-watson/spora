@@ -3,52 +3,65 @@ from outbreaker import main
 import sys
 from Bio import SeqIO
 import subprocess
+import pytest
 
-DATA_DIR = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/'))
-print(DATA_DIR)
 
-test_reference = os.path.join(DATA_DIR, 'reference', 'ncov_reference.gb')
+@pytest.fixture
+def get_data_dir():
+    return str(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/')))
 
+@pytest.fixture
+def get_alignment_reference(get_data_dir):
+    return str(os.path.join(get_data_dir, 'reference', 'ncov_reference.gb'))
+
+@pytest.fixture
+def get_focal_sequences(get_data_dir):
+    return str(os.path.join(get_data_dir, 'tests/', 'focal_seqs.fa'))
+
+@pytest.fixture
+def get_background_sequences(get_data_dir):
+    return str(os.path.join(get_data_dir, 'tests/', 'background_seqs.fa'))
+
+@pytest.fixture
+def get_names_csv(get_data_dir):
+    return str(os.path.join(get_data_dir, 'tests/', 'names.csv'))
+
+@pytest.fixture
+def get_renamed_fasta(tmp_path):
+    return str(os.path.join(tmp_path, 'pytest_renamed.fa'))
 
 class TestOutbreaker:
-    def test_read_test_focal_fasta(self):
-        query_file = os.path.join(DATA_DIR, 'tests/', 'focal_seqs.fa')
-        assert len(list(SeqIO.parse(query_file, "fasta"))) == 4
-    def test_read_test_background_fasta(self):
-        query_file = os.path.join(DATA_DIR, 'tests/', 'background_seqs.fa')
-        assert len(list(SeqIO.parse(query_file, "fasta"))) == 6
+    def test_read_test_focal_fasta(self, get_focal_sequences):
+        assert len(list(SeqIO.parse(get_focal_sequences, "fasta"))) == 4
+    def test_read_test_background_fasta(self, get_background_sequences):
+        assert len(list(SeqIO.parse(get_background_sequences, "fasta"))) == 6
 
-    def test_run_outputs(self, tmp_path):
-        focal_seqs = os.path.join(DATA_DIR, 'tests/', 'focal_seqs.fa')
-        background_seqs = os.path.join(DATA_DIR, 'tests/', 'background_seqs.fa')
+    def test_run_outputs(self, tmp_path, get_focal_sequences, get_background_sequences,
+                         get_alignment_reference, get_renamed_fasta):
 
-        args = ['-f', str(focal_seqs), '-b', str(background_seqs), '--rename', '-p', 'pytest',
-                '-r', str(test_reference), '-o', str(tmp_path)]
+        args = ['-f', get_focal_sequences, '-b', get_background_sequences, '--rename', '-p', 'pytest',
+                '-r', get_alignment_reference, '-o', str(tmp_path)]
 
         main.main(sysargs = args)
-        output_merged_fasta = os.path.join(tmp_path, 'pytest_renamed.fa')
-        assert len(list(SeqIO.parse(output_merged_fasta, "fasta"))) == 10
+        assert len(list(SeqIO.parse(get_renamed_fasta, "fasta"))) == 10
 
         new_names = ["pytest_" + str(i) for i in range(1, 11, 1)]
         names_in_fasta = []
-        for record in SeqIO.parse(output_merged_fasta, "fasta"):
+        for record in SeqIO.parse(get_renamed_fasta, "fasta"):
             names_in_fasta.append(record.id)
         assert names_in_fasta == new_names
 
 
-    def test_run_with_missing_names_csv(self, tmp_path):
-        focal_seqs = os.path.join(DATA_DIR, 'tests/', 'focal_seqs.fa')
-        background_seqs = os.path.join(DATA_DIR, 'tests/', 'background_seqs.fa')
-        names_csv = os.path.join(DATA_DIR, 'tests/', 'names.csv')
+    def test_run_with_missing_names_csv(self, tmp_path, get_focal_sequences, get_background_sequences,
+                         get_alignment_reference, get_names_csv, get_renamed_fasta):
 
-        args = ['-f', str(focal_seqs), '-b', str(background_seqs), '--rename', '-p', 'pytest',
-                    '-r', str(test_reference), '-o', str(tmp_path), '--names-csv', str(names_csv)]
+        args = ['-f', get_focal_sequences, '-b', get_background_sequences, '--rename', '-p', 'pytest',
+                    '-r', get_alignment_reference, '-o', str(tmp_path), '--names-csv', get_names_csv]
 
         main.main(sysargs=args)
 
-        output_merged_fasta = os.path.join(tmp_path, 'pytest_renamed.fa')
         names_in_fasta = []
-        for record in SeqIO.parse(output_merged_fasta, "fasta"):
+        for record in SeqIO.parse(get_renamed_fasta, "fasta"):
                 names_in_fasta.append(record.id)
         names_not_all = ['Renamed_1', 'Renamed_2', 'Renamed_3',
             'Focal_4', 'Renamed_4', 'Renamed_5', 'Background_3',
@@ -61,14 +74,11 @@ class TestOutbreaker:
             lines = f.readlines()
         assert str('Renamed_8,Background_3,5\n') in lines
 
-    def test_run_with_console_output(self, tmp_path):
+    def test_run_with_console_output(self, tmp_path, get_focal_sequences, get_background_sequences,
+                         get_alignment_reference, get_names_csv):
 
-        focal_seqs = os.path.join(DATA_DIR, 'tests/', 'focal_seqs.fa')
-        background_seqs = os.path.join(DATA_DIR, 'tests/', 'background_seqs.fa')
-        names_csv = os.path.join(DATA_DIR, 'tests/', 'names.csv')
-
-        results = subprocess.run(['outbreaker', '-f', str(focal_seqs), '-b', str(background_seqs), '--rename', '-p', 'pytest',
-                '-r', str(test_reference), '-o', str(tmp_path), '--names-csv', str(names_csv)],
+        results = subprocess.run(['outbreaker', '-f', get_focal_sequences, '-b', get_background_sequences, '--rename', '-p', 'pytest',
+                '-r', get_alignment_reference, '-o', str(tmp_path), '--names-csv', get_names_csv],
                                  stdout=subprocess.PIPE)
         assert 'WARNING: the following record has no match in samples IDs and will be kept with the original name: Focal_4' \
                in results.stdout.decode('utf-8')
