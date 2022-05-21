@@ -1,5 +1,5 @@
 
-name: outbreaker_CI
+name: outbreaker
 
 # Controls when the workflow will run
 on:
