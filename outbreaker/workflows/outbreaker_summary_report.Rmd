@@ -55,6 +55,7 @@ library(tidyverse)
 library(magrittr)
 library(heatmaply)
 library(stringr)
+library(plotly)
 ```
 
 
@@ -480,7 +481,7 @@ annotated_tree <- annotated_tree_scaled %<+% tr.df.labs +
         legend.key.size = unit(3,"lines")) +
   guides(color = guide_legend(override.aes = list(size = 1.75)))
 
-annotated_tree + geom_treescale(x = 0.1, y = 0.2, fontsize = 2)
+plotly::ggplotly(annotated_tree + geom_treescale(x = 0.1, y = 0.2, fontsize = 2))
 
 ```
 
@@ -575,7 +576,7 @@ annotated_tree_scaled <- ggtree(tree_snps, size = 0.5) + xlim(c(0,
         legend.key.size = unit(3,"lines")) +
   guides(color = guide_legend(override.aes = list(size = 1.75)))
 
-annotated_tree_snps
+plotly::ggplotly(annotated_tree_snps)
 } else {
   cat("No SNPs only analysis was conducted.\nPlease enable SNPs only analysis with outbreaker to generate a SNPs only phylogenetic tree.")
 }

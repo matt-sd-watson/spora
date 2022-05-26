@@ -28,6 +28,7 @@ dependencies:
   - r-heatmaply
   - r-markdown
   - r-essentials
+  - r-plotly
   - r-traminer
   - scipy=1.6.3
   - snakemake
