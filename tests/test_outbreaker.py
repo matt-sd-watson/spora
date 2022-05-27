@@ -6,27 +6,28 @@ import subprocess
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture(scope = "module")
 def get_data_dir():
     return str(os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data/')))
 
-@pytest.fixture
+@pytest.fixture(scope = "module")
 def get_alignment_reference(get_data_dir):
     return str(os.path.join(get_data_dir, 'reference', 'ncov_reference.gb'))
 
-@pytest.fixture
+@pytest.fixture(scope = "module")
 def get_focal_sequences(get_data_dir):
     return str(os.path.join(get_data_dir, 'tests/', 'focal_seqs.fa'))
 
-@pytest.fixture
+@pytest.fixture(scope = "module")
 def get_background_sequences(get_data_dir):
     return str(os.path.join(get_data_dir, 'tests/', 'background_seqs.fa'))
 
-@pytest.fixture
+@pytest.fixture(scope = "module")
 def get_names_csv(get_data_dir):
     return str(os.path.join(get_data_dir, 'tests/', 'names.csv'))
 
-@pytest.fixture
+# need to keep fixtures that call built-in tmp_path within same scope as tmp_path (function
+@pytest.fixture(scope = "function")
 def get_renamed_fasta(tmp_path):
     return str(os.path.join(tmp_path, 'pytest_renamed.fa'))
 
@@ -83,19 +84,3 @@ class TestOutbreaker:
         assert 'WARNING: the following record has no match in samples IDs and will be kept with the original name: Focal_4' \
                in results.stdout.decode('utf-8')
         
-
-
-        
-
-            
-
-
-
-
-
-        
-        
-
-
-
-
