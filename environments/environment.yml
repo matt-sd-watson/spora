@@ -23,7 +23,7 @@ dependencies:
   - raxml=8.2.12
   - r-argparse
   - r-base=>3.6.3
-  - r-dplyr=1.0.7
+  - r-dplyr>=1.0.9
   - r-dt
   - r-heatmaply
   - r-markdown
