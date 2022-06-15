@@ -1,22 +1,35 @@
 from setuptools import setup
-from outbreaker import __version__, _program
+from spora import __version__, _program
+
+try:
+    import pypandoc
+    long_description = pypandoc.convert_file('README.md', 'rst')
+except(IOError, ImportError):
+    long_description = open('README.md').read()
 
 setup(
-    name='outbreaker',
+    name='spora',
     version=__version__,
-    packages=['outbreaker'],
-    package_dir={'outbreaker': 'outbreaker'},
-    scripts=["outbreaker/workflows/outbreaker.smk",
-    "outbreaker/workflows/outbreaker_summary_report.Rmd"],
-    url='',
+    packages=['spora'],
+    package_dir={'spora': 'spora'},
+    scripts=["spora/workflows/spora.smk",
+    "spora/workflows/spora_summary_report.Rmd"],
+    url='https://github.com/matt-sd-watson/spora/',
+    project_urls = {
+        "Issues": "https://github.com/matt-sd-watson/spora/issues",
+        "Source": "https://github.com/matt-sd-watson/spora",
+    },
     license='',
     author='Matthew Watson',
     author_email='matthew.watson@oahpp.ca',
-    description='snakemake and Python integrated workflow for intermediate file generation for COVID outbreak analysis',
-    install_requires = ["pandas>=1.1.5", "numpy>=1.19", "biopython>=1.79", "snakemake>=7.0.0"],
+    description='spora: Streamlined Phylogenomic Outbreak Report Analysis',
+    long_description_content_type="text/markdown",
+    long_description = long_description,
+    install_requires = ["pandas>=1.1.5", "numpy>=1.19", "biopython>=1.79", "snakemake>=7.0.0", "pypandoc>=1.8",
+                        "pytest>=7.1.2"],
     entry_points="""
     [console_scripts]
-    {program} = outbreaker.main:main
+    {program} = spora.main:main
     """.format(program=_program),
     include_package_data=True,
 )

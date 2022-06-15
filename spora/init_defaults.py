@@ -1,4 +1,4 @@
-from outbreaker.config import *
+from spora.config import *
 import os
 import sys
 import yaml
@@ -6,7 +6,7 @@ import yaml
 def get_defaults():
 
     default_dict = {
-        # all outbreaker input options
+        # all spora input options
         KEY_FOCAL_SEQS: "",
         KEY_BACKGROUND_SEQS: "",
         KEY_OUTDIR: "",

@@ -1,8 +1,8 @@
-# outbreaker
+# spora
 
 ## Overview
-outbreaker is a workflow written in snakemake and Python that aims to facilitate rapid generation of intermediate input files that are required for outbreak analysis for COVID-19 at PHO. The workflow is designed to be flexible with command line inputs, providing users with options that can be toggled depending on the nature of the outbreak request and the input files required for downstream outbreak analysis tools. 
-At its core, outbreaker is designed to accept only a small number of mandatory inputs from the user, and will use a standard set of bioinformatics tools to produce a number of output files such as alignments, trees, SNP matrices, etc., that are often the required inputs for downstream outbreak tools such as [ggtree](https://github.com/YuLab-SMU/ggtree) and/or [civet/civet3](https://github.com/snake-flu/civet3). 
+spora is a workflow written in snakemake and Python that aims to facilitate rapid generation of intermediate input files that are required for outbreak analysis for COVID-19 at PHO. The workflow is designed to be flexible with command line inputs, providing users with options that can be toggled depending on the nature of the outbreak request and the input files required for downstream outbreak analysis tools. 
+At its core, spora is designed to accept only a small number of mandatory inputs from the user, and will use a standard set of bioinformatics tools to produce a number of output files such as alignments, trees, SNP matrices, etc., that are often the required inputs for downstream outbreak tools such as [ggtree](https://github.com/YuLab-SMU/ggtree) and/or [civet/civet3](https://github.com/snake-flu/civet3). 
 
 
 ## Background
@@ -13,7 +13,7 @@ At the same time, WGS data from COVID-19 cases known to not be involved in the s
 ## Workflow
 
 <p align="center">
-    <img src="images/outbreaker_workflow.png">
+    <img src="images/spora_workflow.png">
 </p>
 
 

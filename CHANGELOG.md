@@ -1,4 +1,4 @@
-# outbreaker Changelog
+# spora Changelog
 
 ## Version 0.1.0, 06-10-21
 - Initial workflow
@@ -65,4 +65,10 @@
  - Change behaviour of renaming when no CSV is supplied. Will now use the prefix for the run to generate new names with alphanumerical sequential order (i.e. prefix_1, prefix_2) and will output the name matches as a CSV file
  - Above fix changes fixes the error in the SNP distance plot in the HTML report when rename is used but no names CSV is supplied
  - Addition of pytests in the CI/CD workflow
+ 
+ ## Version 0.7.0, 15-06-22
+ 
+ - outbreaker is renamed to spora to be compatible with PyPi
+ - version change to dplyr dependency for conda env
+ - Addition of CD GA workflow to pudblish to PyPi on release
  

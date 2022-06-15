@@ -1,4 +1,4 @@
-name: ncov_outbreaker
+name: ncov_spora
 channels:
   - conda-forge
   - bioconda
@@ -23,7 +23,7 @@ dependencies:
   - raxml=8.2.12
   - r-argparse
   - r-base=>3.6.3
-  - r-dplyr=1.0.7
+  - r-dplyr>=1.0.9
   - r-dt
   - r-heatmaply
   - r-markdown
@@ -39,3 +39,4 @@ dependencies:
     - Bio
     - git+https://github.com/matt-sd-watson/FASTAfurious.git
     - git+https://github.com/aineniamh/snipit.git
+    - pypandoc>=1.8
