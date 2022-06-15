@@ -1,5 +1,5 @@
 
-name: outbreaker
+name: spora
 
 # Controls when the workflow will run
 on:
@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: Outbreaker test on ${{ matrix.os }}
+    name: spora test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -22,20 +22,20 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           environment-file: environments/environment.yml
-          activate-environment: ncov_outbreaker
+          activate-environment: ncov_spora
           channels: conda-forge,bioconda,defaults,r
           mamba-version: "*"
-      - name: Install outbreaker
+      - name: Install spora
         run: pip install .
-      - name: Check outbreaker version
+      - name: Check spora version
         shell: bash -l {0}
         run: outbreaker -v
-      - name: Run outbreaker test via CLI
+      - name: Run spora test via CLI
         shell: bash -l {0}
-        run: outbreaker -f data/tests/focal_seqs.fa -b data/tests/background_seqs.fa -r data/reference/ncov_reference.gb -o outbreaker_test -p test --snps-only --report --rename --names-csv data/tests/names.csv
-      - name: Run outbreaker test via config
+        run: spora -f data/tests/focal_seqs.fa -b data/tests/background_seqs.fa -r data/reference/ncov_reference.gb -o outbreaker_test -p test --snps-only --report --rename --names-csv data/tests/names.csv
+      - name: Run spora test via config
         shell: bash -l {0}
-        run: outbreaker -c data/test_config.yaml
-      - name: Run pytest for outbreaker
+        run: spora -c data/test_config.yaml
+      - name: Run pytest for spora
         shell: bash -l {0}
         run: pytest tests/

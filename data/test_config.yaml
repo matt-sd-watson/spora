@@ -4,7 +4,7 @@ background_seqs: tests/background_seqs.fa
 
 reference: reference/ncov_reference.gb
 
-outdir: outbreaker_test_config
+outdir: spora_test_config
 
 snps_only: True
 

@@ -1,6 +1,6 @@
 # Outputs
 
-Currently outbreaker creates its various output files all within the specified target output directory. The output files would appear as follows: \
+Currently spora creates its various output files all within the specified target output directory. The output files would appear as follows: \
     • {prefix}.fa - multi-FASTA (not aligned) that contains all focal sequences, as well as background sequences, if they are included. \
     • {prefix}_aln.fasta - multi-FASTA alignment (using MAFFT) of the above FASTA file. \
     • {prefix}_snp_dists.csv - SNP distance matrix of all samples included in the multi-FASTA. Generated from snp-dists using the multi alignment file with molten format selected and CSV format output. Note that only ACGT differences are counted (N’s are disregarded). \
@@ -14,13 +14,13 @@ For the outbreak described above with the prefix example_oct_2021, the output di
 
 
 <p align="center">
-    <img src="images/outbreaker_outputs.png">
+    <img src="images/spora_outputs.png">
 </p>
 
 
 ## Summary output report
 
-As of outbreaker v0.5.0, there is the option to create a summary report in HTML format. The report contains the following sections: \
+As of spora v0.5.0, there is the option to create a summary report in HTML format. The report contains the following sections: \
     • Summary Statistics \
         ◦ Input sequences \
         ◦ Retained sequences for analysis \

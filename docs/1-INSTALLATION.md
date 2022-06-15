@@ -8,13 +8,13 @@ The following tools/packages are required: \
     
 ## Basic installation from source
 
-The basic installation instructions for outbreaker are as follows: 
+The basic installation instructions for spora are as follows: 
 
 ```
-git clone https://github.com/matt-sd-watson/outbreaker.git
-conda env create -f outbreaker/environments/environment.yml
-conda activate ncov_outbreaker
-cd outbreaker
+git clone https://github.com/matt-sd-watson/spora.git
+conda env create -f spora/environments/environment.yml
+conda activate ncov_spora
+cd spora
 pip install .
 ```
 
@@ -22,20 +22,20 @@ pip install .
 
 Test that the installation was successful using the following commands: 
 ```
-outbreaker
+spora
 #OR
-outbreaker --help
+spora --help
 ```
 
 which should result in the following output: 
 
 ```
 usage: 
-    	outbreaker -c <config.yaml> 
+    	spora -c <config.yaml> 
     	OR
-    	outbreaker --focal_list ...<input args>
+    	spora --focal_list ...<input args>
 
-Outbreaker: Python and snakemake outbreak workflow for COVID-19
+spora: Python and snakemake outbreak workflow for COVID-19
 
 optional arguments:
   -h, --help            Show the help output and exit.
@@ -49,7 +49,7 @@ optional arguments:
                         Master FASTA of genomic sequences to select from. Required if either --focal-sequences or --background-sequences are not supplied in
                         FASTA format
   -o OUTDIR, --output-directory OUTDIR
-                        Path to the desired output directory. If none is provided, a new folder named outbreaker will be created in the current directory
+                        Path to the desired output directory. If none is provided, a new folder named spora will be created in the current directory
   -r REFERENCE, --reference REFERENCE
                         .gb file containing the desired COVID-19 reference sequence. Required
   -p PREFIX, --prefix PREFIX
@@ -67,8 +67,8 @@ optional arguments:
                         Integer for the minimum genome completeness percentage for filtering. Default: 90
   -gl GENOME_LENGTH, --genome-length GENOME_LENGTH
                         Integer for the minimum genome length for filtering. Default: 29500
-  -rp, --report         Generate a summary output report for the outbreaker run. Default: Not enabled
-  -v, --version         Show the current outbreaker version then exit.
+  -rp, --report         Generate a summary output report for the spora run. Default: Not enabled
+  -v, --version         Show the current spora version then exit.
   
 ```
 

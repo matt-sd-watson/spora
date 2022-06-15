@@ -1,4 +1,4 @@
-# outbreaker Changelog
+# spora Changelog
 
 ## Version 0.1.0, 06-10-21
 - Initial workflow
@@ -18,7 +18,7 @@
  
 ## Version 0.3.0, 15-11-21
  - focal and background sequences can now be supplied as either .txt list files 
- of sample names, or as FASTA files containing the actual sequences. outbreaker 
+ of sample names, or as FASTA files containing the actual sequences. spora 
  will assess the file ending and evaluate whether to create subsets based on the 
  names (if .txt is passed) or use the FASTA given
  
@@ -26,16 +26,16 @@
 ## Version 0.4.0, 19-11-21
  - if a previous run of iqtree2 for the SNPs only tree is detected, the console will
  allow the user to select how to proceed. Currently the only possible selection is to confirm
- overwriting the existing SNPs only tree analysis, or outbreaker will exit. Requires a new environment
+ overwriting the existing SNPs only tree analysis, or spora will exit. Requires a new environment
  installation as the logic uses click through pip. 
  
  
 ## Version 0.5.0, 29-11-21
- - outbreaker now creates an output summary report summarizing the number of input sequences, SNP distance patterns relative to the focal sequences inputs, as well as basic rendering of the phylogenetic trees. The report is flexible: it will modify the outputs accordingly if either background sequences are not supplied or SNPs only analysis is not conducted. requires a majoy environment upgrade, specifically with regards to R and Bioconductor dependencies through conda
+ - spora now creates an output summary report summarizing the number of input sequences, SNP distance patterns relative to the focal sequences inputs, as well as basic rendering of the phylogenetic trees. The report is flexible: it will modify the outputs accordingly if either background sequences are not supplied or SNPs only analysis is not conducted. requires a majoy environment upgrade, specifically with regards to R and Bioconductor dependencies through conda
  
   
 ## Version 0.6.0, 01-12-21
- - outbreaker now uses snipit to create a graphic of SNP diversity relative to the reference, and includes it in the summary report. This requires an environment upgrade to add snipit through pip
+ - spora now uses snipit to create a graphic of SNP diversity relative to the reference, and includes it in the summary report. This requires an environment upgrade to add snipit through pip
  - The summary report can now handle the recognition of focal and background sequences when samples are renamed through ```--rename```.
  - Still requires teting to verify that ```--rename``` with ```--names_csv``` works in the same way as above
 
@@ -46,7 +46,7 @@
   
    
 ## Minor Version 0.6.2, 07-12-21
- - ```outbreaker -v``` or ```outbreaker --version``` will now show the current version, then exit. 
+ - ```spora -v``` or ```spora --version``` will now show the current version, then exit. 
  - In the summary report, the trees are automatically scaled with xlim to ensure that the tree labels are always visible, no matter the length of the branch
  - In the summary report, a treescale was added for the trees that renders in either the bottom right or top right, depending on where the longest branches are. This was done to avoid having the treescale overlapping a tip lab. 
   
@@ -58,7 +58,7 @@
  
 ## Minor Version 0.6.4, 17-02-22
 
- - outbreaker now retains all sequences if ```--names-csv``` is used for renaming and not all sequences are contained in the CSV
+ - spora now retains all sequences if ```--names-csv``` is used for renaming and not all sequences are contained in the CSV
  - updates to the renaming behavior to be compatible with fastafurious v1.2.0 (additional warning messages)
  
 ## Minor Version 0.6.5, 28-04-22 (Patch)
