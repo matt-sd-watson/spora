@@ -29,7 +29,7 @@ jobs:
         run: pip install .
       - name: Check spora version
         shell: bash -l {0}
-        run: outbreaker -v
+        run: spora -v
       - name: Run spora test via CLI
         shell: bash -l {0}
         run: spora -f data/tests/focal_seqs.fa -b data/tests/background_seqs.fa -r data/reference/ncov_reference.gb -o outbreaker_test -p test --snps-only --report --rename --names-csv data/tests/names.csv
