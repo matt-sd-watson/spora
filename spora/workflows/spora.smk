@@ -4,7 +4,7 @@ import click
 import pandas as pd
 
 if not config["outdir"]: 
-    config["outdir"] = os.getcwd() + "/outbreaker/"
+    config["outdir"] = os.getcwd() + "/spora/"
     
 def isFasta(input):
     return input.endswith(('.fa', '.fasta', '.FA', '.FASTA'))
@@ -315,7 +315,7 @@ rule summary_report:
     output:
         report = os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")
     params: 
-        script = srcdir("outbreaker_summary_report.Rmd"),
+        script = srcdir("spora_summary_report.Rmd"),
         output = absol_path(os.path.join(config["outdir"], config["prefix"] + "_summary_report.html")),
         focal_read = str(absol_path(config["focal_seqs"])),
         background_read = str(absol_path(config["background_seqs"])),

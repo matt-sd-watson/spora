@@ -1,5 +1,5 @@
-from outbreaker import __version__
-import outbreaker.init_defaults as defaults
+from spora import __version__
+import spora.init_defaults as defaults
 
 import os
 import sys
@@ -18,7 +18,7 @@ def isFasta(input):
 # mandatory = set(["focal_list", "reference", "master_fasta"])
 
 def get_primary_snakefile(thisdir):
-    snakefile = os.path.join(thisdir, 'workflows', 'outbreaker.smk')
+    snakefile = os.path.join(thisdir, 'workflows', 'spora.smk')
     if not os.path.exists(snakefile):
         print(f'Error: cannot find Snakefile at {snakefile}\n Check installation\n')
         sys.exit(-1)
@@ -27,11 +27,11 @@ def get_primary_snakefile(thisdir):
 
 def main(sysargs = sys.argv[1:]):
     parser = argparse.ArgumentParser(add_help=False,
-                                    description="Outbreaker: Python and snakemake outbreak workflow for COVID-19",
+                                    description="spora: Streamlined Phylogenomic Outbreak Report Analysis",
                                     usage='''
-    \toutbreaker -c <config.yaml> 
+    \tspora -c <config.yaml> 
     \tOR
-    \toutbreaker --focal_list ...<input args>''')
+    \tspora --focal_list ...<input args>''')
 
     parser.add_argument('-h', "--help", action="help",
                         help="Show the help output and exit.",
@@ -56,7 +56,7 @@ def main(sysargs = sys.argv[1:]):
 
     parser.add_argument('-o', "--output-directory", action="store",
                         help="Path to the desired output directory. If none is provided, "
-                             "a new folder named outbreaker will be created in the current directory",
+                             "a new folder named spora will be created in the current directory",
                         dest="outdir", default="")
 
     parser.add_argument('-r', "--reference", action="store",
@@ -101,12 +101,12 @@ def main(sysargs = sys.argv[1:]):
                         dest="genome_length", default=29500, type=int)
 
     parser.add_argument('-rp', "--report", action="store_true",
-                        help="Generate a summary output report for the outbreaker run. Default: Not enabled",
+                        help="Generate a summary output report for the spora run. Default: Not enabled",
                         dest="report")
 
     parser.add_argument('-v', "--version", action="version",
-                        help="Show the current outbreaker version then exit.",
-                        version=f"This is outbreaker: v{__version__}")
+                        help="Show the current spora version then exit.",
+                        version=f"This is spora: v{__version__}")
 
 
 
@@ -182,10 +182,10 @@ def main(sysargs = sys.argv[1:]):
                                  )
 
     if status:  # translate "success" into shell exit code of 0
-        sys.stderr.write(f"\noutbreaker completed successfully.\n")
+        sys.stderr.write(f"\nspora completed successfully.\n")
         return 0
 
-    sys.stderr.write(f"\noutbreaker did not complete successfully.\n")
+    sys.stderr.write(f"\nspora did not complete successfully.\n")
     return 1
 
 if __name__ == '__main__':

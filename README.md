@@ -1,4 +1,4 @@
-# outbreaker
+# spora: Streamlined Phylogenomic Outbreak Report Analysis
 
 ![example workflow](https://github.com/matt-sd-watson/outbreaker/actions/workflows/main.yml/badge.svg)
 
@@ -7,18 +7,18 @@ snakemake and Python integrated workflow for intermediate file generation for CO
 ## Installation
 
 ```
-git clone https://github.com/matt-sd-watson/outbreaker.git
-conda env create -f ncov_outbreaker/environments/environment.yml
-conda activate ncov_outbreaker
-cd outbreaker
+git clone https://github.com/matt-sd-watson/spora.git
+conda env create -f ncov_spora/environments/environment.yml
+conda activate ncov_spora
+cd spora
 pip install . 
 ```
 
 ## Updating
 
 ```
-conda activate ncov_outbreaker
-cd ~/outbreaker
+conda activate ncov_spora
+cd ~/spora
 git checkout main
 git pull
 pip install . 

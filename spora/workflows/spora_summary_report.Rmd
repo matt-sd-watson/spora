@@ -1,5 +1,5 @@
 ---
-title: "outbreaker Summary Report"
+title: "spora Summary Report"
 date: "Generated:  `r format(Sys.time(), '%B %d, %Y, %H:%M')`<div style=\"height: 40px;\"></div>"
 params:
   focal_list:
@@ -222,7 +222,7 @@ Number of background sequences input: **`r format (nrow(background_input))`**
 <br>    
 
 ### Retained sequences for analysis
-outbreaker filters samples based on the following criteria: \
+spora filters samples based on the following criteria: \
    + sequence filtering if ```--filter``` is used. This will remove any sequences    that do not meet the genome completeness and length requirements set     by the user. \
    + removal of any duplicate sequence(s) based on sequence name. If a      duplicated sequence is found in both the focal and background sequence    sets the duplicate(s) is/are removed and the retained unique sequence    is treated as a focal sequence. \
 
@@ -354,7 +354,7 @@ if (closest_dist_w_background  != "NA (no background sequences)") {
 datatable(w_background_with_min, rownames= FALSE,
           colnames = rep("", ncol(w_background_with_min)))
 } else {
-  cat("No background sequences were provided to outbreaker. SNP pairs are not shown.")
+  cat("No background sequences were provided to spora. SNP pairs are not shown.")
 }
 
 ```
@@ -373,7 +373,7 @@ if (farthest_dist_w_background  != "NA (no background sequences)") {
 datatable(w_background_with_max, rownames= FALSE,
           colnames = rep("", ncol(w_background_with_max)))
 } else {
-  cat("No background sequences were provided to outbreaker. SNP pairs are not shown.")
+  cat("No background sequences were provided to spora. SNP pairs are not shown.")
 }
 ```
 
@@ -578,7 +578,7 @@ annotated_tree_scaled <- ggtree(tree_snps, size = 0.5) + xlim(c(0,
 
 annotated_tree_snps
 } else {
-  cat("No SNPs only analysis was conducted.\nPlease enable SNPs only analysis with outbreaker to generate a SNPs only phylogenetic tree.")
+  cat("No SNPs only analysis was conducted.\nPlease enable SNPs only analysis with spora to generate a SNPs only phylogenetic tree.")
 }
 
 

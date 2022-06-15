@@ -1,4 +1,4 @@
-name: ncov_outbreaker
+name: ncov_spora
 channels:
   - conda-forge
   - bioconda
@@ -39,3 +39,4 @@ dependencies:
     - Bio
     - git+https://github.com/matt-sd-watson/FASTAfurious.git
     - git+https://github.com/aineniamh/snipit.git
+    - pypandoc>=1.8

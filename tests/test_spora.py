@@ -1,5 +1,5 @@
 import os
-from outbreaker import main
+from spora import main
 import sys
 from Bio import SeqIO
 import subprocess
@@ -31,7 +31,7 @@ def get_names_csv(get_data_dir):
 def get_renamed_fasta(tmp_path):
     return str(os.path.join(tmp_path, 'pytest_renamed.fa'))
 
-class TestOutbreaker:
+class TestSpora:
     def test_read_test_focal_fasta(self, get_focal_sequences):
         assert len(list(SeqIO.parse(get_focal_sequences, "fasta"))) == 4
     def test_read_test_background_fasta(self, get_background_sequences):
@@ -78,7 +78,7 @@ class TestOutbreaker:
     def test_run_with_console_output(self, tmp_path, get_focal_sequences, get_background_sequences,
                          get_alignment_reference, get_names_csv):
 
-        results = subprocess.run(['outbreaker', '-f', get_focal_sequences, '-b', get_background_sequences, '--rename', '-p', 'pytest',
+        results = subprocess.run(['spora', '-f', get_focal_sequences, '-b', get_background_sequences, '--rename', '-p', 'pytest',
                 '-r', get_alignment_reference, '-o', str(tmp_path), '--names-csv', get_names_csv],
                                  stdout=subprocess.PIPE)
         assert 'WARNING: the following record has no match in samples IDs and will be kept with the original name: Focal_4' \
