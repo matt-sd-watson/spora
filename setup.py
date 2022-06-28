@@ -26,7 +26,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description = long_description,
     install_requires = ["pandas>=1.1.5", "numpy>=1.19", "biopython>=1.79", "snakemake>=7.0.0", "pypandoc>=1.8",
-                        "pytest>=7.1.2", "click>=8.0.3],
+                        "pytest>=7.1.2", "click>=8.0.3"],
     entry_points="""
     [console_scripts]
     {program} = spora.main:main
