@@ -17,6 +17,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
+        python-version: ["3.8"]
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
@@ -24,7 +25,7 @@ jobs:
           environment-file: environments/environment.yml
           activate-environment: ncov_spora
           channels: conda-forge,bioconda,defaults,r
-          mamba-version: "*"
+          mamba-version: "*"        
       - name: Install spora
         run: pip install .
       - name: Check spora version
