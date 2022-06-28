@@ -1,5 +1,4 @@
 import os
-from spora import main
 import sys
 from Bio import SeqIO
 import subprocess
@@ -40,10 +39,11 @@ class TestSpora:
     def test_run_outputs(self, tmp_path, get_focal_sequences, get_background_sequences,
                          get_alignment_reference, get_renamed_fasta):
 
-        args = ['-f', get_focal_sequences, '-b', get_background_sequences, '--rename', '-p', 'pytest',
-                '-r', get_alignment_reference, '-o', str(tmp_path)]
+        results = subprocess.run(
+            ['spora', '-f', get_focal_sequences, '-b', get_background_sequences, '--rename', '-p', 'pytest',
+                '-r', get_alignment_reference, '-o', str(tmp_path)],
+            stdout=subprocess.PIPE)
 
-        main.main(sysargs = args)
         assert len(list(SeqIO.parse(get_renamed_fasta, "fasta"))) == 10
 
         new_names = ["pytest_" + str(i) for i in range(1, 11, 1)]
@@ -56,10 +56,10 @@ class TestSpora:
     def test_run_with_missing_names_csv(self, tmp_path, get_focal_sequences, get_background_sequences,
                          get_alignment_reference, get_names_csv, get_renamed_fasta):
 
-        args = ['-f', get_focal_sequences, '-b', get_background_sequences, '--rename', '-p', 'pytest',
-                    '-r', get_alignment_reference, '-o', str(tmp_path), '--names-csv', get_names_csv]
-
-        main.main(sysargs=args)
+        results = subprocess.run(
+            ['spora', '-f', get_focal_sequences, '-b', get_background_sequences, '--rename', '-p', 'pytest',
+                    '-r', get_alignment_reference, '-o', str(tmp_path), '--names-csv', get_names_csv],
+            stdout=subprocess.PIPE)
 
         names_in_fasta = []
         for record in SeqIO.parse(get_renamed_fasta, "fasta"):
