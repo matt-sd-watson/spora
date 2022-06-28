@@ -25,7 +25,10 @@ jobs:
           environment-file: environments/environment.yml
           activate-environment: ncov_spora
           channels: conda-forge,bioconda,defaults,r
-          mamba-version: "*"        
+          mamba-version: "*" 
+      - uses: actions/setup-python@v4
+        with: 
+          python-version: ${{ matrix.python-version }}
       - name: Install spora
         run: pip install .
       - name: Check spora version
