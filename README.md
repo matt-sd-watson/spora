@@ -1,5 +1,6 @@
 # spora: Streamlined Phylogenomic Outbreak Report Analysis
 
+[![PyPI version](https://badge.fury.io/py/spora.svg)](https://badge.fury.io/py/spora)
 ![example workflow](https://github.com/matt-sd-watson/spora/actions/workflows/main.yml/badge.svg)
 
 snakemake and Python integrated workflow for intermediate file generation for COVID outbreak analysis
