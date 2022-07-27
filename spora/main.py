@@ -104,10 +104,13 @@ def main(sysargs = sys.argv[1:]):
                         help="Generate a summary output report for the spora run. Default: Not enabled",
                         dest="report")
 
+    parser.add_argument('-int', "--interactive-trees", action="store_true",
+                        help="Use ineractive trees in the output report. Default: Not enabled",
+                        dest="interac_trees")
+
     parser.add_argument('-v', "--version", action="version",
                         help="Show the current spora version then exit.",
                         version=f"This is spora: v{__version__}")
-
 
 
     if len(sysargs) < 1:

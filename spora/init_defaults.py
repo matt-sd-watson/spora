@@ -21,7 +21,8 @@ def get_defaults():
         KEY_FILTER: False,
         KEY_GENOME_COMPLETENESS: 90,
         KEY_GENOME_LENGTH: 29500,
-        KEY_REPORT: False
+        KEY_REPORT: False,
+        KEY_INTERAC_TREES: False
     }
     return default_dict
 
@@ -41,7 +42,8 @@ def valid_inputs(config):
     "filter": "filter",
     "genome_completeness": "genome_completeness",
     "genome_filter": "genome_filter",
-    "report": "report"}
+    "report": "report",
+    "interac_trees": "interac_trees"}
 
     for i in config:
         valid_arguments[i] = i
